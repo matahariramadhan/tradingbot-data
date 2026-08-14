@@ -109,10 +109,13 @@ output, and safely skipped it on a subsequent run. Exact measurements are in the
 2026-08-14 archive-runner evidence report.
 
 The package was installed and its CLI was verified outside the repository. Git
-origin is configured, and the user reports that the reviewed project checkpoint
-has been pushed to GitHub. Remote execution must still pin and verify the
-intended revision. Raw inputs and audit outputs remain correctly outside the
-code package in Google Drive.
+origin is configured, and the reviewed project checkpoint has been pinned for
+Colab at `03abbb745cc7919087b2e56607bb6bdf4d582a23`. A local byte-identical
+reproduction of the July 27 direct-GZIP member passed the grouped runner and
+matched the established ZIP baseline. Raw inputs and audit outputs remain
+correctly outside the code package in Google Drive; the actual Drive-backed
+persistent July 27 smoke test has now passed with an existing output and
+matching checksum.
 
 ## Current Phase Status
 
@@ -132,11 +135,23 @@ and should remain deferred until the data-readiness gate passes.
 
 ## Recommended Next Lesson
 
-Push package version `0.2.0`, then repeat the pinned installation in
-Colab. Mount Google Drive, build the grouped-GZIP manifest, inspect its explicit
-missing/ignored inputs, verify one group's UTC coverage from event timestamps,
-and process that group. Only then run the full multi-day audit and inspect the
-readiness report before discussing models.
+The pinned Colab installation of package version `0.2.0` has passed at revision
+`03abbb745cc7919087b2e56607bb6bdf4d582a23`. The inspected Drive manifest now
+has all 30 groups processed successfully, with the expected 89 raw members, one
+explicit missing Polymarket role, and 10 ignored derived files. The local
+byte-identical July 27 direct-GZIP reproduction matches the known baseline, and
+the real Drive-backed July 27 audit is now completed with a verified persistent
+output. The full 30-group UTC coverage preflight has also passed with zero
+review groups. A separate post-batch check verified all 30 records are
+`completed`, every output exists, and every output checksum matches. Next,
+the aggregate report found 89,677 missing starts across 55 gap events, with a
+largest gap of 645 seconds. The learner accepted excluding source-incomplete,
+severely under-covered June 29 from the first feature/proxy view while retaining
+all raw/audit evidence, and retaining other days for row-level gap-aware
+validity. The local `0.3.0` feature-view builder now passes 13 tests and its
+July 27 canary produced 284 usable rows out of 288. Next, publish that revision,
+run the feature view for the 29 eligible remote groups, and measure valid rows
+before discussing models.
 
 ## Resume Instructions
 

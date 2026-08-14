@@ -25,6 +25,7 @@ from archive_manifest import (  # noqa: E402
 )
 from audit_binance_klines import audit  # noqa: E402
 from build_archive_manifest import build_grouped_gzip_records  # noqa: E402
+from build_binance_feature_view import build_feature_view  # noqa: E402
 from run_archive_audit import run_one, verify_completed_output  # noqa: E402
 from run_archive_batch import coverage_for, load_coverage_map  # noqa: E402
 
@@ -98,6 +99,7 @@ class ArchiveWorkflowTests(unittest.TestCase):
             "inspect_binance_klines.py",
             "build_decision_snapshot.py",
             "build_binance_proxy_targets.py",
+            "build_binance_feature_view.py",
         ):
             completed = subprocess.run(
                 [sys.executable, str(SCRIPTS_DIR / name), "--help"],
@@ -180,6 +182,105 @@ class ArchiveWorkflowTests(unittest.TestCase):
             self.assertEqual(zip_summary["records_scanned"], 2)
             self.assertEqual(direct_member, direct.name)
             self.assertEqual(zip_member, member)
+
+    def test_feature_view_requires_complete_as_of_lookback(self) -> None:
+        decision = datetime(2026, 6, 29, 0, 5, tzinfo=timezone.utc)
+        decision_ms = int(decision.timestamp() * 1000)
+        records = []
+        for offset in range(61, 0, -1):
+            start_ms = decision_ms - offset * 1000
+            receipt = datetime.fromtimestamp(
+                (start_ms + 999) / 1000, tz=timezone.utc
+            ).isoformat().replace("+00:00", "Z")
+            records.append(
+                self._binance_record(start_ms, receipt)
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            direct = root / "binance_raw_events_2026-06-29.jsonl.gz"
+            with gzip.open(direct, "wb") as destination:
+                destination.write(self._jsonl_bytes(records))
+
+            rows, _, counters = build_feature_view(
+                direct,
+                None,
+                datetime(2026, 6, 29, tzinfo=timezone.utc),
+                duration_seconds=600,
+            )
+
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(counters["windows_requested"], 2)
+            self.assertEqual(counters["feature_rows_usable"], 1)
+            self.assertEqual(rows[0]["feature_row_usable"], "false")
+            self.assertEqual(rows[1]["feature_row_usable"], "true")
+            self.assertEqual(rows[1]["return_1m_valid"], "true")
+            self.assertEqual(rows[1]["volatility_1m_valid"], "true")
+
+    def test_feature_view_rejects_missing_lookback_inputs(self) -> None:
+        decision = datetime(2026, 6, 29, 0, 5, tzinfo=timezone.utc)
+        decision_ms = int(decision.timestamp() * 1000)
+        records = []
+        for offset in range(61, 0, -1):
+            start_ms = decision_ms - offset * 1000
+            receipt = datetime.fromtimestamp(
+                (start_ms + 999) / 1000, tz=timezone.utc
+            ).isoformat().replace("+00:00", "Z")
+            if offset == 30:
+                continue
+            records.append(self._binance_record(start_ms, receipt))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            direct = root / "binance_raw_events_2026-06-29.jsonl.gz"
+            with gzip.open(direct, "wb") as destination:
+                destination.write(self._jsonl_bytes(records))
+
+            rows, _, counters = build_feature_view(
+                direct,
+                None,
+                datetime(2026, 6, 29, tzinfo=timezone.utc),
+                duration_seconds=600,
+            )
+
+            self.assertEqual(counters["feature_rows_usable"], 0)
+            row = rows[1]
+            self.assertEqual(row["return_1s_valid"], "true")
+            self.assertEqual(row["return_1m_valid"], "false")
+            self.assertIn("missing_kline", row["return_1m_quality_flag"])
+
+    def test_feature_view_uses_latest_eligible_kline_when_latest_is_late(self) -> None:
+        decision = datetime(2026, 6, 29, 0, 5, tzinfo=timezone.utc)
+        decision_ms = int(decision.timestamp() * 1000)
+        records = []
+        for offset in range(62, 0, -1):
+            start_ms = decision_ms - offset * 1000
+            receipt = datetime.fromtimestamp(
+                (start_ms + 999) / 1000, tz=timezone.utc
+            ).isoformat().replace("+00:00", "Z")
+            if offset == 1:
+                receipt = "2026-06-29T00:05:00.100000Z"
+            records.append(self._binance_record(start_ms, receipt))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            direct = root / "binance_raw_events_2026-06-29.jsonl.gz"
+            with gzip.open(direct, "wb") as destination:
+                destination.write(self._jsonl_bytes(records))
+
+            rows, _, counters = build_feature_view(
+                direct,
+                None,
+                datetime(2026, 6, 29, tzinfo=timezone.utc),
+                duration_seconds=600,
+            )
+
+            self.assertEqual(counters["feature_rows_usable"], 1)
+            self.assertEqual(rows[1]["feature_row_usable"], "true")
+            self.assertEqual(
+                rows[1]["latest_interval_start_utc"],
+                "2026-06-29T00:04:58.000Z",
+            )
 
     def test_grouped_gzip_runner_completes_binance_scope_only(self) -> None:
         start = 1782691200000

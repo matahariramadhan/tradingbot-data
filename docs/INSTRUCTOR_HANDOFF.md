@@ -96,6 +96,17 @@ The student currently understands the distinction between:
   group-to-UTC-day coverage map and verify output checksums before marking the
   configured Binance audit scope `completed`. Group input completeness remains
   separate from that processing status.
+- The July 27 direct-GZIP runner path has been reproduced locally against a
+  byte-identical Binance member and matches the known ZIP audit. The remote
+  Drive-backed audit has now also completed: its output exists and its checksum
+  matches the manifest. The full 30-group receipt-date coverage preflight has
+  also passed with zero review groups. The full batch then completed with zero
+  reported failures, and a separate check verified all 30 outputs and
+  checksums. The aggregate report found 89,677 missing starts across 55 gaps,
+  with a largest gap of 645 seconds. A local package revision `0.3.0` now
+  builds the gap-aware feature view; its July 27 canary produced 284 usable
+  rows out of 288 and all 13 local tests passed. The revision is not yet
+  published to Colab; the remaining remote task is the 29-group feature run.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
@@ -103,12 +114,18 @@ The student currently understands the distinction between:
 
 Make the remote grouped-GZIP work reproducible:
 
-1. Push package version `0.2.0`, then install its pinned revision in Colab.
-2. Create the checksum-bearing manifest for all remote candidate-date groups.
-3. Verify the group-to-UTC-day coverage map from timestamps inside the inputs.
-4. Process one group first, then run the resumable batch.
-5. Save each group's audit result to persistent Google Drive storage.
-6. Review source completeness separately from Binance audit completion.
+1. Publish the tested local package revision `0.3.0` and install that exact
+   revision in Colab; the currently pinned remote version is `0.2.0`.
+2. Treat the inspected 30-record Drive manifest as the control record: it has
+   89 raw members, one incomplete group, 10 ignored derived files, and all
+   records initially `pending`.
+3. July 27 has now passed the persistent Drive audit: its output exists and its
+   checksum matches the manifest.
+4. Apply the accepted policy: exclude June 29 from the first feature/proxy view
+   while preserving raw/audit rows; retain other days for row-level validity.
+5. Build the gap-aware Binance feature view remotely for the 29 eligible
+   groups and measure valid rows.
+6. Keep official label recovery separate from the Binance engineering track.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

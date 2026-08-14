@@ -40,11 +40,22 @@ excludes derived CSV exports from raw identity. It records groups as `pending`
 and refuses to overwrite an existing manifest. The audit runner owns status
 transitions after verified output exists.
 
-The pinned Colab package smoke test has passed at revision `43405c9`: the
-repository cloned, `tradingbot-data` version `0.1.0` installed, and the expected
-CLI commands were available. Google Drive mounting and archive processing have
-not yet been tested. The user-reported reproduction is recorded in
-`docs/evidence/2026-08-14-colab-package-smoke-test.md`.
+The initial pinned Colab package smoke test passed at revision `43405c9`: the
+repository cloned, `tradingbot-data` version `0.1.0` installed, and the
+expected CLI commands were available. That earlier reproduction is recorded in
+`docs/evidence/2026-08-14-colab-package-smoke-test.md`; the later grouped-GZIP
+revision completed the first persistent Drive-backed audit.
+
+The grouped-GZIP revision is now pushed and its pinned Colab upgrade has also
+passed at revision `03abbb745cc7919087b2e56607bb6bdf4d582a23`: package version
+`0.2.0` replaced `0.1.0` and exposed the revised group-oriented CLI. The Drive
+manifest was then created successfully with 30 records and its structural
+inspection matched the Drive inventory. A local byte-identical reproduction of
+the July 27 direct-GZIP group matched the known ZIP baseline, and the actual
+Drive-backed July 27 smoke test has now completed with a persistent output and
+matching checksum. Exact evidence is in the 2026-08-14 Colab grouped-GZIP
+package, manifest, manifest-inspection, and direct-GZIP reproduction records
+under `docs/evidence/`.
 
 Package version `0.2.0` has also been built and installed in an isolated local
 environment. Ten focused tests verify schema-v1 compatibility, grouped-GZIP
@@ -63,11 +74,19 @@ The workflow is installable as package `tradingbot-data` through
 batch, proxy-target, snapshot, inspection, and day-audit workflows. The Colab
 execution contract is documented in `docs/COLAB_RUNBOOK.md`.
 
+The shared `tradingbot_data.ipynb` now contains a streaming coverage preflight
+cell. It scans internal Binance receipt timestamps, writes a review report, and
+refuses to write a coverage map if any group is missing, malformed, or spans a
+different UTC date than its candidate group. The full Drive collection has now
+passed this preflight: all 30 groups were verified and zero groups were sent to
+review. The map and report are stored in the project control directory on
+Drive. Exact scope is in `docs/evidence/2026-08-14-colab-coverage-map.md`.
+
 ## Available Artifacts
 
-- Git origin is configured. The user reports that the reviewed project
-  checkpoint has been pushed to GitHub; remote execution should still pin and
-  verify the intended revision before processing data.
+- Git origin is configured. Local `main` and `origin/main` were verified at the
+  grouped-GZIP checkpoint `03abbb745cc7919087b2e56607bb6bdf4d582a23`, and the
+  same pinned revision installed successfully in Colab.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -76,6 +95,42 @@ execution contract is documented in `docs/COLAB_RUNBOOK.md`.
   candidates have Binance, Polymarket, and recorder-log inputs; 2026-06-29 lacks
   a Polymarket raw input and appears partial. Exact inventory evidence is in
   `docs/evidence/2026-08-14-drive-gzip-inventory.md`.
+- A checksum-bearing manifest for the remote collection now exists at
+  `/content/drive/MyDrive/tradingbot-data-audit/manifest-v2-03abbb7.json` and
+  reports 30 completed records, with 89 authoritative raw members totaling 10.706 GiB,
+  and 10 ignored derived files. Candidate 2026-06-29 is the sole incomplete
+  group because `polymarket_raw` is absent. Every recorded member hash has the
+  expected SHA-256 length. Exact inspection evidence is in
+  `docs/evidence/2026-08-14-colab-grouped-gzip-manifest-inspection.md`.
+- The local July 27 ZIP contains a Binance member with the exact size and
+  SHA-256 recorded for the remote direct-GZIP group. The direct-GZIP runner
+  reproduced the known July 27 audit summary, but its temporary output did not
+  change the remote manifest. Exact scope is in
+  `docs/evidence/2026-08-14-july27-direct-gzip-audit-reproduction.md`.
+- The first persistent Drive-backed audit completed for group `2026-07-27`.
+  Its output exists and its recorded checksum matches the output. Exact
+  measurements are in
+  `docs/evidence/2026-08-14-colab-july27-direct-gzip-audit.md`.
+- The full 30-group Binance batch completed with zero reported failures. July
+  27 was skipped only after its existing output was verified; the other 29
+  groups produced persistent outputs. Exact run scope is in
+  `docs/evidence/2026-08-14-colab-batch-audit.md`.
+- A separate post-batch check verified all 30 manifest records are
+  `completed`, every output exists, and every recorded output checksum matches;
+  zero problems were found.
+- The aggregate multi-day Binance report scanned 263,322,186 records with zero
+  malformed JSON, zero duplicate starts, and zero backward starts. It found
+  89,677 missing one-second starts across 55 gap events; the largest gap was
+  645 seconds. June 29 is source-incomplete and severely under-covered; other
+  high-gap days require gap-aware feature validity. Exact measurements are in
+  `docs/evidence/2026-08-14-colab-multi-day-binance-quality.md`.
+- A local package revision `0.3.0` now contains a gap-aware Binance
+  feature-view builder that emits one row per five-minute decision window and
+  applies completion, receipt-time, and consecutive-lookback rules. Its July
+  27 local canary produced 284 fully usable rows out of 288 requested windows;
+  all 13 local tests passed. Exact scope and measurements are in
+  `docs/evidence/2026-08-14-local-feature-view-canary.md`. This revision is
+  not yet published or installed in Colab.
 - Recorder source code is not currently present in this workspace.
 
 The accepted working architecture keeps the large raw archives in remote
@@ -179,9 +234,9 @@ Exact measurements, scope, and supporting sources are owned by
 ## Constraints and Open Questions
 
 - It is unknown whether the same collection defects affect all 30 recorded days.
-- The direct-GZIP implementation must be pushed, installed at a pinned revision
-  in Colab, and smoke-tested against one Drive group before the full collection
-  is processed.
+- The July 27 persistent Drive smoke test passed. The full collection's
+  coverage mapping also passed; the remaining workflow risk is per-day audit
+  data quality and source completeness.
 - Historical resolved outcomes may be recoverable from Polymarket, but recovery
   has not been implemented or verified for the full dataset.
 - The exact availability of historical Chainlink reference values for the
@@ -191,18 +246,14 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Push the grouped-GZIP implementation, then repeat the pinned Colab package
-   smoke test.
-2. Build the checksum-bearing grouped manifest for the 30 candidate dates in
-   remote storage.
-3. Build and verify the group-to-UTC-day coverage map without guessing from
-   upload filenames.
-4. Review the focused per-day audit and extend it into a multi-day coverage and
-   integrity report without loading entire archives into memory.
-5. Determine which historical Chainlink labels and reference values can be
+1. Review and publish the tested `0.3.0` package revision, then install that
+   exact revision in Colab.
+2. Build the feature view remotely for the 29 eligible groups, excluding June
+   29 from the first derived view while preserving its raw and audit evidence.
+3. Determine which historical Chainlink labels and reference values can be
    recovered.
-6. Correct or replace the recorder before collecting additional research data.
-7. Define and evaluate the official in-window dataset separately from the proxy
-   dataset.
+4. Correct or replace the recorder before collecting additional research data.
+5. Define and evaluate the official in-window dataset separately from the
+   proxy dataset.
 
 No model training should begin from the sample archive alone.
