@@ -36,7 +36,7 @@ coverage_map.json
 audit outputs/
 ```
 
-## 3. Create the manifest
+## 3. Create the grouped-GZIP manifest
 
 Run this once for a new archive collection. The output path should be in Drive.
 The audit and policy versions should identify the reviewed package revision and
@@ -46,28 +46,55 @@ data-quality rules.
 !tradingbot-data manifest \
   --archive-dir "/content/drive/MyDrive/<project>/raw-archives" \
   --output "/content/drive/MyDrive/<project>/manifest.json" \
-  --audit-version "tradingbot-data-0.1.0-<commit>" \
-  --policy-version "data-quality-2026-08-14"
+  --audit-version "tradingbot-data-0.2.0-<commit>" \
+  --policy-version "data-quality-2026-08-14" \
+  --layout grouped-gzip \
+  --recursive
 ```
 
+The command recognizes only authoritative raw Binance JSONL, Polymarket JSONL,
+and recorder-log GZIP names as group members. Other GZIP files, such as derived
+CSV exports, are recorded as ignored instead of becoming raw inputs. Missing
+source roles remain explicit.
+
 The command refuses to overwrite an existing manifest. Preserve the old one if
-the archive collection or processing identity changes.
+the input collection or processing identity changes.
 
 ## 4. Verify the coverage map
 
-The map must explicitly identify the UTC midnight that each archive covers:
+The map must explicitly identify the UTC midnight that each logical group
+covers:
 
 ```json
 {
-  "archive-file-001.zip": "2026-07-27T00:00:00Z"
+  "2026-07-27": "2026-07-27T00:00:00Z"
 }
 ```
 
-Do not infer this from an upload filename. If coverage is ambiguous or spans
-multiple days, mark it for review and do not run that archive until its scope is
+The group ID is candidate grouping information, not coverage proof. Verify the
+map from timestamps inside the raw inputs. If coverage is ambiguous or spans
+multiple days, mark it for review and do not run that group until its scope is
 resolved.
 
-## 5. Run the resumable batch audit
+## 5. Run one group smoke test
+
+Before the batch, process one timestamp-verified full-day candidate and persist
+its output in Drive:
+
+```python
+!tradingbot-data audit \
+  --manifest "/content/drive/MyDrive/<project>/manifest.json" \
+  --archive "<group-id>" \
+  --day-start "<verified-UTC-midnight>" \
+  --archive-root "/content/drive/MyDrive/<project>/raw-archives" \
+  --output-dir "/content/drive/MyDrive/<project>/audit-outputs"
+```
+
+`--archive` retains its legacy option name but accepts a schema-v2 group ID.
+Verify the manifest status, output existence, and output checksum before
+starting the batch.
+
+## 6. Run the resumable batch audit
 
 ```python
 !tradingbot-data batch \
@@ -77,7 +104,8 @@ resolved.
   --output-dir "/content/drive/MyDrive/<project>/audit-outputs"
 ```
 
-The runner processes one archive at a time. It checks the raw checksum, writes
+The runner processes one group at a time. It checks the selected Binance raw
+checksum, writes
 the audit output, verifies the output checksum, and only then marks the record
 `completed`. If Colab stops, rerun the same command. Use `--retry-failed` only
 after reviewing the recorded error. Use `--recover-running` only after

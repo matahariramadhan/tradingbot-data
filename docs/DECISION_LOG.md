@@ -33,6 +33,7 @@ canonical definitions. It does not restate those definitions.
 | D-023 | 2026-08-14 | Treat manifest status and actual output state as a consistency check: never skip a `completed` entry without a verified output, and never trust output from an `interrupted` or `failed` entry automatically | `docs/STATE.md` under **Archive Processing Contract** |
 | D-024 | 2026-08-14 | Require an explicit UTC coverage start for each archive audit; never infer the recording day from an archive upload filename | `docs/STATE.md` under **Archive Processing Contract** |
 | D-025 | 2026-08-14 | Distribute the data-foundation workflow as an installable GitHub package for Colab, while keeping raw data and audit outputs in Google Drive | `docs/COLAB_RUNBOOK.md` |
+| D-026 | 2026-08-14 | Supersede D-022's physical-archive interpretation: treat one candidate-date raw GZIP group as the resumable unit, hash each source member, exclude derived CSVs from raw identity, retain missing roles explicitly, and verify UTC coverage independently | `docs/STATE.md` under **Archive Processing Contract** |
 
 New entries are append-only. If a decision is superseded, append a new entry and
 link both entries to the new canonical definition; do not rewrite the old row.

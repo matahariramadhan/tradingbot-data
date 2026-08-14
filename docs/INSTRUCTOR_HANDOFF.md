@@ -66,14 +66,17 @@ The student currently understands the distinction between:
 
 ## Current Project Snapshot
 
-- One recorder archive is available locally under `data/raw/archives/`.
-- Approximately 30 days of recorder data remain in Google Drive.
-- Large raw archives and heavy computation should remain remote.
+- One legacy recorder ZIP sample is available locally under
+  `data/raw/archives/`.
+- The Google Drive collection contains 30 candidate dates as direct GZIP
+  inputs: 30 Binance raw files, 29 Polymarket raw files, 30 recorder logs, and
+  10 derived CSV exports. Candidate 2026-06-29 lacks Polymarket raw data.
+- Large raw inputs and heavy computation should remain remote.
 - The local laptop is for code, documentation, tests, small fixtures, and
   compact reports or model artifacts.
 - Free Google Colab is a provisional candidate for the Phase 1 audit, not a
   permanent production environment.
-- The raw archive must remain unchanged. Invalid observations remain available
+- Raw inputs must remain unchanged. Invalid observations remain available
   for audit, while explicit downstream model views may exclude them.
 - Missing official Chainlink target data must not be replaced with Binance data;
   the row remains auditable but is not eligible for labeled training until the
@@ -86,25 +89,26 @@ The student currently understands the distinction between:
   decision inside a fixed market window; these evaluations must stay separate.
 - The proxy target builder now allows late boundary receipts for offline label
   construction while keeping the receipt cutoff for decision-time features.
-- The initial manifest generator hashes raw ZIP archives in streaming chunks and
-  creates safe `pending` records. The one-archive runner now owns status
-  transitions and verified audit-output attachment.
-- The one-archive runner and batch orchestrator now exist. They require an
-  explicit archive-to-UTC-day coverage map and verify output checksums before
-  marking a record `completed`.
+- Manifest schema v2 groups the authoritative direct-GZIP files by candidate
+  date, hashes every present raw member, preserves missing roles, and records
+  derived CSV exports as ignored. Legacy ZIP input remains supported.
+- The one-group runner and batch orchestrator require an explicit
+  group-to-UTC-day coverage map and verify output checksums before marking the
+  configured Binance audit scope `completed`. Group input completeness remains
+  separate from that processing status.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
-Make the remote archive work reproducible:
+Make the remote grouped-GZIP work reproducible:
 
-1. Create the checksum-bearing manifest for all remote archives.
-2. Create and verify the archive-to-UTC-day coverage map.
-3. Process one archive at a time with the audit runner.
-4. Save each archive's audit result to persistent Google Drive storage.
-5. Resume unfinished archives if a Colab runtime stops.
-6. Run the multi-day data-readiness audit when the archives are accessible.
+1. Push package version `0.2.0`, then install its pinned revision in Colab.
+2. Create the checksum-bearing manifest for all remote candidate-date groups.
+3. Verify the group-to-UTC-day coverage map from timestamps inside the inputs.
+4. Process one group first, then run the resumable batch.
+5. Save each group's audit result to persistent Google Drive storage.
+6. Review source completeness separately from Binance audit completion.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

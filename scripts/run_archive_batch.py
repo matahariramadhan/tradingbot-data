@@ -50,13 +50,37 @@ def get_records(manifest_path: Path) -> list[dict[str, Any]]:
         return [dict(record) for record in payload["records"]]
 
 
+def record_identifier(record: dict[str, Any]) -> str:
+    identifier = record.get("group_id") or record.get("archive_relative_path")
+    if not isinstance(identifier, str):
+        raise ValueError("manifest record has no stable identifier")
+    return identifier
+
+
 def coverage_for(record: dict[str, Any], mapping: dict[str, str]) -> str | None:
-    relative_path = record["archive_relative_path"]
-    if relative_path in mapping:
-        return mapping[relative_path]
-    archive_name = record["archive_name"]
-    if archive_name in mapping:
-        return mapping[archive_name]
+    identifiers = [
+        record.get("group_id"),
+        record.get("archive_relative_path"),
+        record.get("archive_name"),
+    ]
+    inputs = record.get("inputs")
+    if isinstance(inputs, dict):
+        binance = inputs.get("binance_raw") or inputs.get("zip_archive")
+        if isinstance(binance, dict):
+            identifiers.extend(
+                (binance.get("relative_path"), binance.get("name"))
+            )
+    matches = {
+        mapping[identifier]
+        for identifier in identifiers
+        if isinstance(identifier, str) and identifier in mapping
+    }
+    if len(matches) > 1:
+        raise ValueError(
+            f"conflicting coverage entries for {record_identifier(record)}"
+        )
+    if matches:
+        return matches.pop()
     return None
 
 
@@ -113,7 +137,7 @@ def main() -> int:
             if args.recover_running:
                 should_process = True
             else:
-                blocked_running.append(record["archive_relative_path"])
+                blocked_running.append(record_identifier(record))
                 should_process = False
         elif status in {"pending", "completed"}:
             should_process = True
@@ -121,14 +145,17 @@ def main() -> int:
             should_process = args.retry_failed
         else:
             unknown_statuses.append(
-                f"{record.get('archive_relative_path')}: {status}"
+                f"{record_identifier(record)}: {status}"
             )
             should_process = False
         if not should_process:
             continue
-        day_start = coverage_for(record, coverage_map)
+        try:
+            day_start = coverage_for(record, coverage_map)
+        except ValueError as error:
+            raise SystemExit(f"error: {error}") from error
         if day_start is None:
-            missing_coverage.append(record["archive_relative_path"])
+            missing_coverage.append(record_identifier(record))
             continue
         selected.append((record, day_start))
 
@@ -151,7 +178,7 @@ def main() -> int:
 
     failures = 0
     for record, day_start in selected:
-        identifier = record["archive_relative_path"]
+        identifier = record_identifier(record)
         try:
             message = run_one(
                 manifest_path,

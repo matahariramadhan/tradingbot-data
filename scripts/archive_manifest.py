@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Any, Callable, Iterator
 
 
-MANIFEST_SCHEMA_VERSION = 1
+MANIFEST_SCHEMA_VERSION = 2
+SUPPORTED_MANIFEST_SCHEMA_VERSIONS = {1, MANIFEST_SCHEMA_VERSION}
 HASH_CHUNK_BYTES = 1024 * 1024
 
 
@@ -52,7 +53,9 @@ def load_manifest(path: Path) -> dict[str, Any]:
         payload = json.load(source)
     if not isinstance(payload, dict):
         raise ValueError("manifest root must be a JSON object")
-    if payload.get("manifest_schema_version") != MANIFEST_SCHEMA_VERSION:
+    if payload.get("manifest_schema_version") not in (
+        SUPPORTED_MANIFEST_SCHEMA_VERSIONS
+    ):
         raise ValueError(
             "unsupported manifest_schema_version: "
             f"{payload.get('manifest_schema_version')}"
@@ -98,12 +101,21 @@ def update_manifest(
 
 def find_record_index(payload: dict[str, Any], identifier: str) -> int:
     records = payload["records"]
-    matches = [
-        index
-        for index, record in enumerate(records)
-        if record.get("archive_relative_path") == identifier
-        or record.get("archive_name") == identifier
-    ]
+    matches = []
+    for index, record in enumerate(records):
+        identifiers = {
+            record.get("group_id"),
+            record.get("archive_relative_path"),
+            record.get("archive_name"),
+        }
+        inputs = record.get("inputs")
+        if isinstance(inputs, dict):
+            for descriptor in inputs.values():
+                if isinstance(descriptor, dict):
+                    identifiers.add(descriptor.get("relative_path"))
+                    identifiers.add(descriptor.get("name"))
+        if identifier in identifiers:
+            matches.append(index)
     if not matches:
         raise ValueError(f"archive not found in manifest: {identifier}")
     if len(matches) > 1:

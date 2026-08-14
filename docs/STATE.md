@@ -32,17 +32,31 @@ preserving the receipt time of each target boundary observation. Late target
 boundaries do not invalidate a historical label, but they remain ineligible as
 decision-time features.
 
-The initial checksum-bearing manifest generator now exists at
-`scripts/build_archive_manifest.py`. It hashes archives in streaming chunks,
-records them as `pending`, and refuses to overwrite an existing manifest. It
-does not mark archives completed; a later audit runner must update status only
-after verified output exists.
+The checksum-bearing manifest generator at
+`scripts/build_archive_manifest.py` supports both the legacy ZIP sample and the
+actual direct-GZIP Drive layout. For direct GZIP, it forms candidate-date
+groups, hashes each raw source member independently, records missing roles, and
+excludes derived CSV exports from raw identity. It records groups as `pending`
+and refuses to overwrite an existing manifest. The audit runner owns status
+transitions after verified output exists.
 
-The one-archive runner at `scripts/run_archive_audit.py` and batch orchestrator
-at `scripts/run_archive_batch.py` now process these records safely. The batch
-runner requires an explicit archive-to-UTC-day coverage map and refuses to guess
+The pinned Colab package smoke test has passed at revision `43405c9`: the
+repository cloned, `tradingbot-data` version `0.1.0` installed, and the expected
+CLI commands were available. Google Drive mounting and archive processing have
+not yet been tested. The user-reported reproduction is recorded in
+`docs/evidence/2026-08-14-colab-package-smoke-test.md`.
+
+Package version `0.2.0` has also been built and installed in an isolated local
+environment. Ten focused tests verify schema-v1 compatibility, grouped-GZIP
+manifest behavior, direct-GZIP and legacy-ZIP reading, scoped completion, and
+coverage-map lookup. Exact scope is recorded in
+`docs/evidence/2026-08-14-grouped-gzip-workflow-reproduction.md`.
+
+The one-group runner at `scripts/run_archive_audit.py` and batch orchestrator at
+`scripts/run_archive_batch.py` now process these records safely. The batch
+runner requires an explicit group-to-UTC-day coverage map and refuses to guess
 missing timestamps. Outputs are versioned and checksummed before a record can
-become `completed`.
+become `completed` for its configured audit scope.
 
 The workflow is installable as package `tradingbot-data` through
 `pyproject.toml`. Its `tradingbot-data` command exposes the manifest, audit,
@@ -51,12 +65,17 @@ execution contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Available Artifacts
 
-- Git origin is configured and the reviewed project checkpoint is committed
-  locally. It has not been pushed as part of this workspace session.
+- Git origin is configured. The user reports that the reviewed project
+  checkpoint has been pushed to GitHub; remote execution should still pin and
+  verify the intended revision before processing data.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
-  it is not currently available in this workspace.
+  it is not currently available in this workspace. A Colab inventory found 99
+  direct GZIP files totaling about 10.75 GiB across 30 candidate dates. Twenty-nine
+  candidates have Binance, Polymarket, and recorder-log inputs; 2026-06-29 lacks
+  a Polymarket raw input and appears partial. Exact inventory evidence is in
+  `docs/evidence/2026-08-14-drive-gzip-inventory.md`.
 - Recorder source code is not currently present in this workspace.
 
 The accepted working architecture keeps the large raw archives in remote
@@ -124,10 +143,25 @@ while the decision-time snapshot cannot.
 
 ## Archive Processing Contract
 
-The initial multi-day audit uses one complete archive as its resumable work
-unit. An archive may be marked `completed` only after its audit output and
-processing metadata have been saved and verified. A scan that finished in
-memory but did not produce verified persistent outputs is not complete.
+The direct-GZIP collection uses one logical candidate-date capture group as its
+resumable work unit. A group can contain `binance_raw`, `polymarket_raw`, and
+`recorder_log` members. Each present raw member has its own path, size, and
+checksum. Derived CSV exports do not define raw input identity. A missing role
+is retained explicitly; it is never silently filled or treated as present.
+
+The candidate date groups physical files but is not proof of UTC coverage. An
+explicit coverage map, verified from timestamps inside the inputs, controls the
+UTC interval audited.
+
+Group input completeness and audit processing status are different. The
+current runner's scope is Binance day coverage, so it may complete that audit
+for a group whose Polymarket member is missing. Such a group remains incomplete
+for the later three-source research-readiness gate.
+
+A group may be marked `completed` for its configured audit scope only after its
+audit output and processing metadata have been saved and verified. A scan that
+finished in memory but did not produce verified persistent outputs is not
+complete.
 
 Manifest status and filesystem state must agree. A `completed` status without
 the expected verified output is an inconsistency and must not cause the archive
@@ -136,8 +170,8 @@ untrusted until its provenance and contents are verified or the archive is
 reprocessed.
 
 Audit scope is also explicit: the runner must receive a UTC day start for each
-archive through its command line or the batch coverage map. Archive filenames
-are not treated as proof of recording-day coverage.
+group through its command line or the batch coverage map. Group IDs and input
+filenames are not treated as proof of recording-day coverage.
 
 Exact measurements, scope, and supporting sources are owned by
 `docs/evidence/2026-07-27-sample-data-audit.md`.
@@ -145,6 +179,9 @@ Exact measurements, scope, and supporting sources are owned by
 ## Constraints and Open Questions
 
 - It is unknown whether the same collection defects affect all 30 recorded days.
+- The direct-GZIP implementation must be pushed, installed at a pinned revision
+  in Colab, and smoke-tested against one Drive group before the full collection
+  is processed.
 - Historical resolved outcomes may be recoverable from Polymarket, but recovery
   has not been implemented or verified for the full dataset.
 - The exact availability of historical Chainlink reference values for the
@@ -154,16 +191,18 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Obtain the recorder source code and build the checksum-bearing manifest for
-   the 30 daily archives in remote storage.
-2. Build and verify the archive-to-UTC-day coverage map without guessing from
+1. Push the grouped-GZIP implementation, then repeat the pinned Colab package
+   smoke test.
+2. Build the checksum-bearing grouped manifest for the 30 candidate dates in
+   remote storage.
+3. Build and verify the group-to-UTC-day coverage map without guessing from
    upload filenames.
-3. Review the focused per-day audit and extend it into a multi-day coverage and
+4. Review the focused per-day audit and extend it into a multi-day coverage and
    integrity report without loading entire archives into memory.
-4. Determine which historical Chainlink labels and reference values can be
+5. Determine which historical Chainlink labels and reference values can be
    recovered.
-5. Correct or replace the recorder before collecting additional research data.
-6. Define and evaluate the official in-window dataset separately from the proxy
+6. Correct or replace the recorder before collecting additional research data.
+7. Define and evaluate the official in-window dataset separately from the proxy
    dataset.
 
 No model training should begin from the sample archive alone.

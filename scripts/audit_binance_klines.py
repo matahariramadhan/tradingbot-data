@@ -4,15 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import gzip
-import io
 import json
 import sys
-import zipfile
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
+
+try:
+    from .binance_source import describe_binance_source, iter_json_records
+except ImportError:
+    from binance_source import describe_binance_source, iter_json_records
 
 
 def parse_utc(value: str) -> datetime:
@@ -27,40 +29,6 @@ def iso_from_ms(value: int) -> str:
     return datetime.fromtimestamp(value / 1000, tz=timezone.utc).isoformat(
         timespec="milliseconds"
     ).replace("+00:00", "Z")
-
-
-def find_binance_member(archive: zipfile.ZipFile, requested: str | None) -> str:
-    names = archive.namelist()
-    if requested is not None:
-        if requested not in names:
-            raise ValueError(f"Archive member not found: {requested}")
-        return requested
-
-    candidates = [
-        name
-        for name in names
-        if name.startswith("binance_raw_events_") and name.endswith(".jsonl.gz")
-    ]
-    if len(candidates) != 1:
-        raise ValueError(
-            "Could not select one Binance member automatically; "
-            "pass --member explicitly."
-        )
-    return candidates[0]
-
-
-def iter_json_records(
-    archive: zipfile.ZipFile, member_name: str
-) -> Iterator[dict[str, Any] | None]:
-    with archive.open(member_name, "r") as compressed_member:
-        with gzip.GzipFile(fileobj=compressed_member) as gzip_stream:
-            with io.TextIOWrapper(gzip_stream, encoding="utf-8") as text_stream:
-                for line in text_stream:
-                    if line.strip():
-                        try:
-                            yield json.loads(line)
-                        except json.JSONDecodeError:
-                            yield None
 
 
 def audit(
@@ -83,53 +51,52 @@ def audit(
     max_gap_ms = 0
     gap_events = 0
 
-    with zipfile.ZipFile(archive_path) as archive:
-        selected_member = find_binance_member(archive, member_name)
-        for record in iter_json_records(archive, selected_member):
-            if record is None:
-                counters["malformed_json"] += 1
-                continue
-            counters["records_scanned"] += 1
-            stream = record.get("stream", "<missing>")
-            stream_counts[stream] += 1
-            receipt = record.get("received_at_utc")
-            if isinstance(receipt, str):
-                if first_receipt is None:
-                    first_receipt = receipt
-                last_receipt = receipt
+    selected_member = describe_binance_source(archive_path, member_name)
+    for record in iter_json_records(archive_path, member_name):
+        if record is None:
+            counters["malformed_json"] += 1
+            continue
+        counters["records_scanned"] += 1
+        stream = record.get("stream", "<missing>")
+        stream_counts[stream] += 1
+        receipt = record.get("received_at_utc")
+        if isinstance(receipt, str):
+            if first_receipt is None:
+                first_receipt = receipt
+            last_receipt = receipt
 
-            if stream != "btcusdt@kline_1s":
-                continue
-            counters["kline_records"] += 1
+        if stream != "btcusdt@kline_1s":
+            continue
+        counters["kline_records"] += 1
 
-            raw_event = record.get("raw_event", {})
-            kline = raw_event.get("k", {})
-            if kline.get("x") is not True:
-                continue
-            counters["closed_klines"] += 1
+        raw_event = record.get("raw_event", {})
+        kline = raw_event.get("k", {})
+        if kline.get("x") is not True:
+            continue
+        counters["closed_klines"] += 1
 
-            start_ms = int(kline["t"])
-            if not day_start_ms <= start_ms < day_end_ms:
-                continue
-            counters["closed_klines_in_window"] += 1
+        start_ms = int(kline["t"])
+        if not day_start_ms <= start_ms < day_end_ms:
+            continue
+        counters["closed_klines_in_window"] += 1
 
-            if start_ms in starts_in_window:
-                counters["duplicate_starts"] += 1
-                continue
-            starts_in_window.add(start_ms)
+        if start_ms in starts_in_window:
+            counters["duplicate_starts"] += 1
+            continue
+        starts_in_window.add(start_ms)
 
-            if first_closed_start is None:
-                first_closed_start = start_ms
-            if previous_start is not None:
-                delta_ms = start_ms - previous_start
-                if delta_ms < 0:
-                    counters["backward_starts"] += 1
-                elif delta_ms > 1000:
-                    gap_events += 1
-                    max_gap_ms = max(max_gap_ms, delta_ms - 1000)
-            if previous_start is None or start_ms > previous_start:
-                previous_start = start_ms
-                last_closed_start = start_ms
+        if first_closed_start is None:
+            first_closed_start = start_ms
+        if previous_start is not None:
+            delta_ms = start_ms - previous_start
+            if delta_ms < 0:
+                counters["backward_starts"] += 1
+            elif delta_ms > 1000:
+                gap_events += 1
+                max_gap_ms = max(max_gap_ms, delta_ms - 1000)
+        if previous_start is None or start_ms > previous_start:
+            previous_start = start_ms
+            last_closed_start = start_ms
 
     expected = duration_seconds
     unique_count = len(starts_in_window)

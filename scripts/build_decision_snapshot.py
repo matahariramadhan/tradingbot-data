@@ -4,15 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import gzip
-import io
 import json
-import zipfile
 from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import pstdev
-from typing import Any, Iterator
+from typing import Any
+
+try:
+    from .binance_source import describe_binance_source, iter_json_records
+except ImportError:
+    from binance_source import describe_binance_source, iter_json_records
 
 
 def parse_utc(value: str) -> datetime:
@@ -26,41 +28,6 @@ def iso_from_ms(value: int) -> str:
     return datetime.fromtimestamp(value / 1000, tz=timezone.utc).isoformat(
         timespec="milliseconds"
     ).replace("+00:00", "Z")
-
-
-def find_binance_member(archive: zipfile.ZipFile, requested: str | None) -> str:
-    names = archive.namelist()
-    if requested is not None:
-        if requested not in names:
-            raise ValueError(f"Archive member not found: {requested}")
-        return requested
-
-    candidates = [
-        name
-        for name in names
-        if name.startswith("binance_raw_events_") and name.endswith(".jsonl.gz")
-    ]
-    if len(candidates) != 1:
-        raise ValueError(
-            "Could not select one Binance member automatically; "
-            "pass --member explicitly."
-        )
-    return candidates[0]
-
-
-def iter_json_records(
-    archive: zipfile.ZipFile, member_name: str
-) -> Iterator[dict[str, Any] | None]:
-    with archive.open(member_name, "r") as compressed_member:
-        with gzip.GzipFile(fileobj=compressed_member) as gzip_stream:
-            with io.TextIOWrapper(gzip_stream, encoding="utf-8") as text_stream:
-                for line in text_stream:
-                    if not line.strip():
-                        continue
-                    try:
-                        yield json.loads(line)
-                    except json.JSONDecodeError:
-                        yield None
 
 
 def build_snapshot(
@@ -87,60 +54,61 @@ def build_snapshot(
         maxlen=lookback_seconds + 1
     )
 
-    with zipfile.ZipFile(archive_path) as archive:
-        selected_member = find_binance_member(archive, member_name)
-        for record in iter_json_records(archive, selected_member):
-            if record is None:
-                counters["malformed_json"] += 1
-                continue
-            counters["records_scanned"] += 1
-            if record.get("stream") != "btcusdt@kline_1s":
-                continue
+    selected_member = describe_binance_source(archive_path, member_name)
+    for record in iter_json_records(archive_path, member_name):
+        if record is None:
+            counters["malformed_json"] += 1
+            continue
+        counters["records_scanned"] += 1
+        if record.get("stream") != "btcusdt@kline_1s":
+            continue
 
-            raw_event = record.get("raw_event", {})
-            kline = raw_event.get("k", {})
-            if kline.get("x") is not True:
-                continue
-            counters["closed_klines"] += 1
+        raw_event = record.get("raw_event", {})
+        kline = raw_event.get("k", {})
+        if kline.get("x") is not True:
+            continue
+        counters["closed_klines"] += 1
 
-            start_ms = int(kline["t"])
-            end_ms = int(kline["T"])
-            close = float(kline["c"])
-            receipt_ms = int(parse_utc(record["received_at_utc"]).timestamp() * 1000)
+        start_ms = int(kline["t"])
+        end_ms = int(kline["T"])
+        close = float(kline["c"])
+        receipt_ms = int(
+            parse_utc(record["received_at_utc"]).timestamp() * 1000
+        )
 
-            if start_ms > decision_ms:
-                continue
-            counters["started_by_cutoff"] += 1
+        if start_ms > decision_ms:
+            continue
+        counters["started_by_cutoff"] += 1
 
-            completed = end_ms <= decision_ms
-            received = receipt_ms <= decision_ms
-            if completed:
-                counters["completed_by_cutoff"] += 1
-            if received:
-                counters["received_by_cutoff"] += 1
+        completed = end_ms <= decision_ms
+        received = receipt_ms <= decision_ms
+        if completed:
+            counters["completed_by_cutoff"] += 1
+        if received:
+            counters["received_by_cutoff"] += 1
 
-            eligible = completed and received
-            if eligible:
-                counters["eligible_klines"] += 1
-                consecutive = (
-                    last_eligible_start is not None
-                    and start_ms == last_eligible_start + 1000
-                    and last_closed_start == start_ms - 1000
-                )
-                if last_eligible_start is None:
-                    quality_flag = "no_previous_eligible_kline"
-                elif not consecutive:
-                    quality_flag = "nonconsecutive_eligible_kline"
-                else:
-                    quality_flag = "valid_consecutive_kline"
+        eligible = completed and received
+        if eligible:
+            counters["eligible_klines"] += 1
+            consecutive = (
+                last_eligible_start is not None
+                and start_ms == last_eligible_start + 1000
+                and last_closed_start == start_ms - 1000
+            )
+            if last_eligible_start is None:
+                quality_flag = "no_previous_eligible_kline"
+            elif not consecutive:
+                quality_flag = "nonconsecutive_eligible_kline"
+            else:
+                quality_flag = "valid_consecutive_kline"
 
-                return_1s = None
-                previous_close = None
-                if consecutive and last_eligible_close is not None:
-                    previous_close = last_eligible_close
-                    return_1s = (close - previous_close) / previous_close
+            return_1s = None
+            previous_close = None
+            if consecutive and last_eligible_close is not None:
+                previous_close = last_eligible_close
+                return_1s = (close - previous_close) / previous_close
 
-                latest_row = {
+            latest_row = {
                     "interval_start_utc": iso_from_ms(start_ms),
                     "interval_end_utc": iso_from_ms(end_ms),
                     "close": f"{close:.8f}",
@@ -153,13 +121,13 @@ def build_snapshot(
                     "available_at_utc": record["received_at_utc"],
                     "feature_valid": str(consecutive).lower(),
                     "quality_flag": quality_flag,
-                }
-                last_eligible_start = start_ms
-                last_eligible_close = close
-                eligible_history.append((start_ms, close))
+            }
+            last_eligible_start = start_ms
+            last_eligible_close = close
+            eligible_history.append((start_ms, close))
 
-            if last_closed_start is None or start_ms > last_closed_start:
-                last_closed_start = start_ms
+        if last_closed_start is None or start_ms > last_closed_start:
+            last_closed_start = start_ms
 
     return_1m = None
     return_1m_valid = False

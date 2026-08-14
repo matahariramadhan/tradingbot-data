@@ -15,10 +15,10 @@ from scripts.run_archive_batch import main as batch_main
 
 
 COMMANDS: dict[str, tuple[str, Callable[[], int]]] = {
-    "manifest": ("create a checksum-bearing archive manifest", manifest_main),
-    "audit": ("audit one archive and update its manifest", audit_main),
-    "batch": ("run resumable audits for manifest archives", batch_main),
-    "day-audit": ("audit one archive's Binance day coverage", day_audit_main),
+    "manifest": ("create a checksum-bearing input manifest", manifest_main),
+    "audit": ("audit one input group and update its manifest", audit_main),
+    "batch": ("run resumable audits for manifest groups", batch_main),
+    "day-audit": ("audit one input's Binance day coverage", day_audit_main),
     "proxy-targets": ("build Binance proxy targets", proxy_targets_main),
     "snapshot": ("build one as-of feature snapshot", snapshot_main),
     "inspect": ("inspect closed one-second klines", inspect_main),

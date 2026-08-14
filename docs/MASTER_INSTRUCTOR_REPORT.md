@@ -45,8 +45,8 @@ The learner can explain and apply:
 - Binance as predictive data and Chainlink as the official settlement source;
 - the separation between a Binance engineering proxy and the official
   Polymarket research target;
-- archive checksums, audit/code versions, policy versions, resumable archive
-  units, verified completion, and manifest/output consistency.
+- per-input checksums, audit/code versions, policy versions, resumable capture
+  groups, verified completion, and manifest/output consistency.
 
 The review bank currently records RQ-001 through RQ-049 as mastered or
 mastered-after-correction.
@@ -82,9 +82,11 @@ The learner accepted these durable design choices:
 - use the completed one-second closes immediately before the proxy start and
   end boundaries;
 - apply receipt cutoffs to features, not to offline target construction;
-- use one complete archive as the resumable audit unit;
-- mark an archive `completed` only after output and metadata are saved and
-  verified;
+- use one logical candidate-date raw-source group as the resumable audit unit;
+- identify each present source member independently and preserve missing roles;
+- keep filename dates separate from verified UTC coverage;
+- mark a group `completed` for its configured audit scope only after output and
+  metadata are saved and verified;
 - never trust status without checking the corresponding output;
 - require an explicit UTC coverage start instead of inferring the recording day
   from an upload filename.
@@ -96,28 +98,29 @@ The project now contains:
 - streaming Binance feature inspection and as-of snapshot builders;
 - gap-aware full-day Binance audits;
 - proxy-target construction with receipt provenance;
-- checksum-bearing archive manifest creation;
-- one-archive audit execution with safe status transitions;
-- multi-archive batch orchestration with explicit coverage-map validation;
+- checksum-bearing manifests for direct-GZIP groups and the legacy ZIP sample;
+- one-group audit execution with safe status transitions;
+- multi-group batch orchestration with explicit coverage-map validation;
 - an installable `tradingbot-data` package and Colab execution runbook;
 - atomic writes, output checksums, stale-run recovery, and focused unit tests.
 
-The local end-to-end reproduction completed one archive, verified its output,
-and safely skipped it on a subsequent run. Exact measurements are in the
+The local end-to-end reproduction completed the legacy sample, verified its
+output, and safely skipped it on a subsequent run. Exact measurements are in the
 2026-08-14 archive-runner evidence report.
 
 The package was installed and its CLI was verified outside the repository. Git
-origin is configured and the reviewed project checkpoint is committed locally;
-it has not been pushed as part of this workspace session. Raw archives and audit
-outputs remain correctly outside the code package in Google Drive.
+origin is configured, and the user reports that the reviewed project checkpoint
+has been pushed to GitHub. Remote execution must still pin and verify the
+intended revision. Raw inputs and audit outputs remain correctly outside the
+code package in Google Drive.
 
 ## Current Phase Status
 
 Phase 1 is not complete. The local engineering workflow is functional, but the
 research readiness gate still requires:
 
-- the approximately 30 remote archive files to be manifested and audited;
-- a verified archive-to-UTC-day coverage map;
+- the 30 remote candidate-date groups to be manifested and audited;
+- a verified group-to-UTC-day coverage map;
 - multi-day coverage and integrity results;
 - recorder source-code review or an intentional replacement;
 - recovery and verification of official Chainlink values and Polymarket
@@ -129,10 +132,11 @@ and should remain deferred until the data-readiness gate passes.
 
 ## Recommended Next Lesson
 
-Run the remote smoke test: clone a pinned package revision in Colab, install
-`tradingbot-data`, mount Google Drive, process one archive, and verify that the
-manifest and audit output persist in Drive. Then run the full multi-day audit
-and inspect the readiness report before discussing models.
+Push package version `0.2.0`, then repeat the pinned installation in
+Colab. Mount Google Drive, build the grouped-GZIP manifest, inspect its explicit
+missing/ignored inputs, verify one group's UTC coverage from event timestamps,
+and process that group. Only then run the full multi-day audit and inspect the
+readiness report before discussing models.
 
 ## Resume Instructions
 

@@ -34,7 +34,7 @@ except ImportError:
     from audit_binance_klines import audit, parse_utc
 
 
-AUDIT_RESULT_SCHEMA_VERSION = 1
+AUDIT_RESULT_SCHEMA_VERSION = 2
 RETRYABLE_STATUSES = {"pending", "interrupted", "failed"}
 
 
@@ -70,6 +70,44 @@ def resolve_archive_path(
 ) -> Path:
     root = archive_root or Path(manifest_payload["archive_root"])
     return root / record["archive_relative_path"]
+
+
+def resolve_audit_input(
+    manifest_payload: dict[str, Any],
+    record: dict[str, Any],
+    input_root: Path | None,
+) -> tuple[Path, str, dict[str, Any]]:
+    """Resolve the physical Binance source for schema-v1 or schema-v2 records."""
+
+    if manifest_payload.get("manifest_schema_version") == 1:
+        path = resolve_archive_path(manifest_payload, record, input_root)
+        descriptor = {
+            "name": record["archive_name"],
+            "relative_path": record["archive_relative_path"],
+            "size_bytes": record["size_bytes"],
+            "sha256": record["input_sha256"],
+        }
+        return path, "zip_archive", descriptor
+
+    inputs = record.get("inputs")
+    if not isinstance(inputs, dict):
+        raise ValueError("schema-v2 record has no inputs object")
+    if "binance_raw" in inputs:
+        role = "binance_raw"
+    elif "zip_archive" in inputs:
+        role = "zip_archive"
+    else:
+        raise ValueError(
+            f"group has no Binance raw input: {record.get('group_id')}"
+        )
+    descriptor = inputs[role]
+    if not isinstance(descriptor, dict):
+        raise ValueError(f"invalid input descriptor for role: {role}")
+    root = input_root or Path(
+        manifest_payload.get("input_root")
+        or manifest_payload.get("archive_root")
+    )
+    return root / descriptor["relative_path"], role, descriptor
 
 
 def resolve_output_path(manifest_path: Path, uri: str) -> Path:
@@ -156,9 +194,11 @@ def run_one(
     elif status not in RETRYABLE_STATUSES:
         raise RuntimeError(f"unsupported archive status: {status}")
 
-    archive_path = resolve_archive_path(manifest_payload, record, archive_root)
-    if not archive_path.is_file():
-        message = f"archive is missing: {archive_path}"
+    source_path, input_role, input_descriptor = resolve_audit_input(
+        manifest_payload, record, archive_root
+    )
+    if not source_path.is_file():
+        message = f"audit input is missing: {source_path}"
         update_record(
             manifest_path,
             identifier,
@@ -166,13 +206,13 @@ def run_one(
         )
         raise FileNotFoundError(message)
 
-    actual_size = archive_path.stat().st_size
-    expected_size = record.get("size_bytes")
-    actual_hash = sha256_file(archive_path)
-    expected_hash = record.get("input_sha256")
+    actual_size = source_path.stat().st_size
+    expected_size = input_descriptor.get("size_bytes")
+    actual_hash = sha256_file(source_path)
+    expected_hash = input_descriptor.get("sha256")
     if actual_size != expected_size or actual_hash != expected_hash:
         message = (
-            "archive identity mismatch: "
+            "audit-input identity mismatch: "
             f"expected size/hash {expected_size}/{expected_hash}, "
             f"found {actual_size}/{actual_hash}"
         )
@@ -198,7 +238,7 @@ def run_one(
 
     try:
         summary, selected_member = audit(
-            archive_path,
+            source_path,
             member,
             parse_utc(day_start),
             duration_seconds,
@@ -206,8 +246,8 @@ def run_one(
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = make_output_path(
             output_dir,
-            archive_path,
-            actual_hash,
+            source_path,
+            record.get("group_sha256", actual_hash),
             record["audit_version"],
             record["policy_version"],
         )
@@ -219,7 +259,18 @@ def run_one(
             "generated_at_utc": iso_now(),
             "audit_version": record["audit_version"],
             "policy_version": record["policy_version"],
-            "archive_relative_path": record["archive_relative_path"],
+            "group_id": record.get(
+                "group_id", record.get("archive_relative_path")
+            ),
+            "candidate_date": record.get("candidate_date"),
+            "input_layout": record.get("input_layout", "legacy_zip"),
+            "input_complete": record.get("input_complete", True),
+            "missing_input_roles": record.get("missing_input_roles", []),
+            "audit_input_role": input_role,
+            "audit_input_relative_path": input_descriptor["relative_path"],
+            "audit_input_sha256": actual_hash,
+            "group_sha256": record.get("group_sha256", actual_hash),
+            "archive_relative_path": record.get("archive_relative_path"),
             "input_sha256": actual_hash,
             "day_start_utc": parse_utc(day_start).isoformat().replace("+00:00", "Z"),
             "duration_seconds": duration_seconds,
@@ -270,11 +321,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--archive",
         required=True,
-        help="Archive relative path or unique archive filename from the manifest",
+        help="Group ID or unique input path/name from the manifest",
     )
     parser.add_argument("--day-start", required=True, help="UTC audit-day start")
     parser.add_argument("--output-dir", required=True, type=Path)
-    parser.add_argument("--archive-root", type=Path)
+    parser.add_argument(
+        "--archive-root",
+        type=Path,
+        help="Override the manifest input root (legacy option name)",
+    )
     parser.add_argument("--member")
     parser.add_argument("--duration-seconds", type=int, default=86400)
     parser.add_argument(

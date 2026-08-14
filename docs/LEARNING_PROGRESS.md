@@ -274,5 +274,13 @@ assigned to a guessed UTC day.
 
 ### Next checkpoint
 
-Apply the verified coverage map to the remote archive collection and run the
-multi-day data-readiness audit one archive at a time.
+The remote inventory revealed that the real collection consists of direct
+GZIP source files rather than ZIP archives. The learner accepted a revised
+abstraction: one logical candidate-date group contains independently identified
+Binance, Polymarket, and recorder-log inputs; derived CSVs do not define raw
+identity; missing roles remain explicit; and the candidate date is not proof of
+UTC coverage. This is decision D-026.
+
+Install the grouped-GZIP workflow at a pinned revision in Colab, build and
+inspect its manifest, verify one group's UTC coverage from event timestamps,
+and run that group before starting the full resumable audit.
