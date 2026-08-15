@@ -116,13 +116,13 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
   observations explicitly before any target/feature join.
-- The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
-  `41fdff5619d4c00389628eb526f9f66ac19f3650` (`0.4.1`). It verifies existing
+- The Colab notebook is now a 29-cell Phase 1 runbook pinned to package commit
+  `d8df657d9d59a4eb34365b3717f05758fc0012a0` (`0.5.0`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
-  recovery into a separate target view, and stops before a model-ready join.
+  recovery into a separate target view, and adds a resumable model-ready join.
   Its boundary scan checkpoints after each source archive, so interruption does
-  not restart completed archive scans. Local structural and resumability smoke
-  tests passed; the updated notebook has not yet been rerun remotely.
+  not restart completed archive scans. Local structural and resumability tests
+  passed; the join step has not yet run remotely.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
@@ -133,11 +133,11 @@ The fix is pushed in commit
 the repinned notebook and rerun the failed recovery cell. That recovery now
 completed: 28 boundaries were applied, zero rows require review, and the
 separate view contains 8,327 valid and 25 invalid rows. The next checkpoint is
-to build a separate model-ready Binance-feature/proxy-target join. Preserve
-the unresolved July 28 boundary and all intraday invalid rows; keep the proxy
+to run the separate model-ready Binance-feature/proxy-target join. Preserve the
+unresolved July 28 boundary and all intraday invalid rows; keep the proxy
 `label_source` separate from official label recovery.
 
-The local next-slice implementation matches by `window_start_utc`, stops on
+The published next-slice implementation matches by `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
 three initial feature columns. It is package `0.5.0` at commit
 `d8df657d9d59a4eb34365b3717f05758fc0012a0`, has passed 19 local tests, and the

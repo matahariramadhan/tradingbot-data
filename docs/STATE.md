@@ -83,9 +83,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes the join implementation and
-  repinned notebook; the join commit is not yet pushed. The notebook pins
-  package `0.5.0` at commit
+- Git origin is configured. Local `main` and `origin/main` now include the join
+  implementation and repinned notebook at `bbf464c`. The notebook pins package
+  `0.5.0` at commit
   `d8df657d9d59a4eb34365b3717f05758fc0012a0`.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
@@ -183,20 +183,20 @@ map and report before derived work runs. Exact preflight scope is in
   8,327 valid rows and 25 invalid rows out of 8,352; the original target view
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
-- The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
-  `41fdff5619d4c00389628eb526f9f66ac19f3650` (`0.4.1`). It verifies control
+- The Colab notebook is now a 29-cell Phase 1 runbook pinned to package commit
+  `d8df657d9d59a4eb34365b3717f05758fc0012a0` (`0.5.0`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, and stops before any model-ready
-  join. Its recovery and quality-verification cells have now run remotely;
-  the model-ready join has not yet been built. Exact rewrite history is in
+  join. Its recovery and quality-verification cells have now run remotely; the
+  model-ready join cell has not yet run remotely. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- A local package `0.5.0` implementation now provides the next join-integrity
+- The package `0.5.0` implementation now provides the next join-integrity
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
-  model features. Its 19-test local suite passes; it has not yet been
-  committed, repinned, or run in Colab. Exact design is in
+  model features. Its 19-test local suite passes; it is committed and
+  repinned, but has not yet run in Colab. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
@@ -318,8 +318,8 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Push the join-capable package and repinned notebook, then run the resumable
-   proxy join against the recovered target view. Verify duplicate-key,
+1. Run the resumable proxy join against the recovered target view. Verify
+   duplicate-key,
    eligibility, row-count, and model-column controls.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
