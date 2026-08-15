@@ -116,8 +116,8 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
   observations explicitly before any target/feature join.
-- The Colab notebook is now a 29-cell Phase 1 runbook pinned to package commit
-  `d8df657d9d59a4eb34365b3717f05758fc0012a0` (`0.5.0`). It verifies existing
+- The Colab notebook is now a 29-cell Phase 1 runbook being repinned to package
+  `6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200` (`0.5.1`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
   recovery into a separate target view, and adds a resumable model-ready join.
   Its boundary scan checkpoints after each source archive, so interruption does
@@ -137,11 +137,12 @@ to run the separate model-ready Binance-feature/proxy-target join. Preserve the
 unresolved July 28 boundary and all intraday invalid rows; keep the proxy
 `label_source` separate from official label recovery.
 
-The published next-slice implementation matches by `window_start_utc`, stops on
+The published next-slice implementation matches by canonicalized
+`window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
-three initial feature columns. It is package `0.5.0` at commit
-`d8df657d9d59a4eb34365b3717f05758fc0012a0`, has passed 19 local tests, and the
-repinned notebook is ready for its remote run.
+three initial feature columns. It is package `0.5.1` at commit
+`6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200`, has passed 19 local tests, and the
+join is ready for its remote rerun.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

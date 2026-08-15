@@ -52,7 +52,7 @@ clear message rather than silently rebuilding or guessing it.
 ## 1. Clone a pinned revision
 
 Use the repository URL and the reviewed join-capable commit
-`d8df657d9d59a4eb34365b3717f05758fc0012a0`:
+`6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The join-capable package revision is `0.5.0`. Do not run recovery or joining from an
+The join-capable package revision is `0.5.1`. Do not run recovery or joining from an
 unpinned working tree. After commit
-`d8df657d9d59a4eb34365b3717f05758fc0012a0` is available from the repository,
+`6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200` is available from the repository,
 run:
 
 ```python
