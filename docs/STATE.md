@@ -177,14 +177,27 @@ map and report before derived work runs. Exact preflight scope is in
   It searched all 30 source groups, found 28 of 29 requested final boundaries,
   and left `2026-07-28` unrecoverable from the scanned collection. Exact scope
   and consequence are in `docs/evidence/2026-08-15-colab-boundary-recovery.md`.
+- The pinned recovery run has now applied all 28 uniquely sourced boundaries
+  into the separate recovered view. All 29 eligible days completed with zero
+  review rows and zero unused recoverable boundaries. The recovered view has
+  8,327 valid rows and 25 invalid rows out of 8,352; the original target view
+  remains unchanged. Exact measurements are in
+  `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
 - The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
   `41fdff5619d4c00389628eb526f9f66ac19f3650` (`0.4.1`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, and stops before any model-ready
-  join. Local JSON and code-cell validation passed; it has not been rerun
-  remotely after this update. Exact rewrite history is in
+  join. Its recovery and quality-verification cells have now run remotely;
+  the model-ready join has not yet been built. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
+- A local package `0.5.0` implementation now provides the next join-integrity
+  gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
+  all source keys in an audit join, and emits a filtered per-day model-ready
+  proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
+  model features. Its 19-test local suite passes; it has not yet been
+  committed, repinned, or run in Colab. Exact design is in
+  `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -305,9 +318,9 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Push the reviewed `0.4.1` recovery fix, run the repinned Colab notebook, and
-   apply the 28 recovered boundary observations through its explicit recovery
-   step. Re-verify target shape, provenance, and quality counts.
+1. Publish package `0.5.0`, repin the Colab notebook, and run the resumable
+   proxy join against the recovered target view. Verify duplicate-key,
+   eligibility, row-count, and model-column controls.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

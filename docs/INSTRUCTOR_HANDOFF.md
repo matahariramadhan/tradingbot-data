@@ -130,11 +130,17 @@ The student currently understands the distinction between:
 
 The fix is pushed in commit
 `41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`). Run
-the repinned notebook and rerun the failed recovery cell. Review the
-separate recovered view for the 28 found final boundaries and verify its shape,
-provenance, and quality. Preserve the unresolved July 28 boundary and all
-intraday invalid rows; keep the proxy `label_source` separate from official
-label recovery.
+the repinned notebook and rerun the failed recovery cell. That recovery now
+completed: 28 boundaries were applied, zero rows require review, and the
+separate view contains 8,327 valid and 25 invalid rows. The next checkpoint is
+to build a separate model-ready Binance-feature/proxy-target join. Preserve
+the unresolved July 28 boundary and all intraday invalid rows; keep the proxy
+`label_source` separate from official label recovery.
+
+The local next-slice implementation matches by `window_start_utc`, stops on
+duplicate keys, preserves invalid rows in an audit view, and exposes only the
+three initial feature columns. It is package `0.5.0` and has passed 19 local
+tests, but has not yet been published or run in Colab.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.
