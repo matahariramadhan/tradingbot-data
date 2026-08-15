@@ -51,8 +51,8 @@ clear message rather than silently rebuilding or guessing it.
 
 ## 1. Clone a pinned revision
 
-Use the repository URL and the reviewed recovery-capable commit
-`41fdff5619d4c00389628eb526f9f66ac19f3650`:
+Use the repository URL and the reviewed join-capable commit
+`d8df657d9d59a4eb34365b3717f05758fc0012a0`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The recovery-capable package revision is `0.4.1`. Do not run recovery from an
+The join-capable package revision is `0.5.0`. Do not run recovery or joining from an
 unpinned working tree. After commit
-`41fdff5619d4c00389628eb526f9f66ac19f3650` is available from the repository,
+`d8df657d9d59a4eb34365b3717f05758fc0012a0` is available from the repository,
 run:
 
 ```python
@@ -84,6 +84,23 @@ It checkpoints one UTC-day CSV at a time, skips verified recovered outputs on
 rerun, and leaves the original `proxy-targets` directory unchanged. A
 successful report must show all uniquely sourced recoveries used and no unused
 recoverable boundaries before the recovered view is eligible for a later join.
+
+After the recovered view passes its quality check, run the resumable join:
+
+```python
+!tradingbot-data proxy-join \
+  --feature-dir "/content/drive/MyDrive/tradingbot-data-audit/feature-views" \
+  --target-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-targets-recovered-v1" \
+  --audit-output-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-join-audit-v1" \
+  --model-output-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-model-view-v1" \
+  --output-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-join-v1.json"
+```
+
+The join checkpoints one day at a time, stops on duplicate
+`window_start_utc` keys, preserves invalid/unmatched rows in the audit view,
+and writes only eligible rows to the model view. The initial model columns are
+`return_1s`, `return_1m`, `volatility_1m`, plus the label and proxy-source
+metadata; target prices and target receipt times are not model columns.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.

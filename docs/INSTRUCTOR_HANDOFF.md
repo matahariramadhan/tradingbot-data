@@ -139,8 +139,9 @@ the unresolved July 28 boundary and all intraday invalid rows; keep the proxy
 
 The local next-slice implementation matches by `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
-three initial feature columns. It is package `0.5.0` and has passed 19 local
-tests, but has not yet been published or run in Colab.
+three initial feature columns. It is package `0.5.0` at commit
+`d8df657d9d59a4eb34365b3717f05758fc0012a0`, has passed 19 local tests, and the
+repinned notebook is ready for its remote run.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

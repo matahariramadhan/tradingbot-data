@@ -83,10 +83,10 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` and `origin/main` now include the
-  recovery fix and repinned notebook at `8a802eb`. The notebook pins package
-  `0.4.1` at commit
-  `41fdff5619d4c00389628eb526f9f66ac19f3650`.
+- Git origin is configured. Local `main` includes the join implementation and
+  repinned notebook; the join commit is not yet pushed. The notebook pins
+  package `0.5.0` at commit
+  `d8df657d9d59a4eb34365b3717f05758fc0012a0`.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -318,7 +318,7 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Publish package `0.5.0`, repin the Colab notebook, and run the resumable
+1. Push the join-capable package and repinned notebook, then run the resumable
    proxy join against the recovered target view. Verify duplicate-key,
    eligibility, row-count, and model-column controls.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
