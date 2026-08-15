@@ -18,6 +18,8 @@ from scripts.build_decision_snapshot import main as snapshot_main
 from scripts.inspect_binance_klines import main as inspect_main
 from scripts.run_archive_audit import main as audit_main
 from scripts.run_archive_batch import main as batch_main
+from scripts.download_binance_klines import main as historical_download_main
+from scripts.build_binance_15m_dataset import main as historical_15m_main
 
 
 COMMANDS: dict[str, tuple[str, Callable[[], int]]] = {
@@ -34,6 +36,14 @@ COMMANDS: dict[str, tuple[str, Callable[[], int]]] = {
     "proxy-review": ("review proxy model-view quality", proxy_review_main),
     "snapshot": ("build one as-of feature snapshot", snapshot_main),
     "inspect": ("inspect closed one-second klines", inspect_main),
+    "historical-download": (
+        "download historical Binance 1-minute klines",
+        historical_download_main,
+    ),
+    "historical-15m": (
+        "build a historical Binance 15-minute dataset",
+        historical_15m_main,
+    ),
 }
 
 
