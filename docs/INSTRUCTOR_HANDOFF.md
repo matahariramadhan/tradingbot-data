@@ -123,8 +123,8 @@ The student currently understands the distinction between:
   adds a proxy model-view quality review.
   Its boundary scan checkpoints after each source archive, so interruption does
   not restart completed archive scans. Local structural and resumability tests
-  passed; the join and review steps have now run remotely. The review output
-  is structurally valid, but `return_1m` currently duplicates `return_1s`.
+  passed; the join and review steps have now run remotely. The post-fix review
+  confirms that `return_1m` is distinct from `return_1s`.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
@@ -139,21 +139,19 @@ July 28 boundary and all intraday invalid rows remain preserved; the proxy
 
 The join has now run remotely: 8,352 audit rows and 8,292 model-ready rows
 were produced, with 60 rows excluded for invalid feature/target data. The
-review found balanced labels and valid chronology, but the feature builder's
-`return_1m = returns[-1]` duplicates `return_1s`; correct that computation and
-regenerate the affected views before designing a chronological baseline split.
+post-fix review found balanced labels, valid chronology, and a corrected
+`return_1m` range of `-0.0029595776` to `0.0071434727`. The next checkpoint is
+designing a chronological baseline split for the proxy engineering view.
 
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
   three initial feature columns. It is package `0.6.1` at commit
   `a3e038a648ed8d182377147eddd64742bfc50495`, has passed 22 local tests, and the
-quality review has completed remotely with 8,292 model rows and balanced
-labels. Before training, fix the feature builder's `return_1m = returns[-1]`
-assignment has now been fixed to compute the net return over the 60-second
-lookback. The pinned notebook also invalidates old feature outputs when their
-package provenance does not match. Run it and review the regenerated views
-before training.
+quality review has completed remotely with 8,292 model rows, balanced labels,
+and corrected feature semantics. The pinned notebook invalidates old feature
+outputs when their package provenance does not match. Next, teach and define a
+chronological proxy baseline split; do not mix it with official-target claims.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

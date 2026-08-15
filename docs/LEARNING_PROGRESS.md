@@ -1,7 +1,7 @@
 # Learning Progress
 
 Status: Authoritative durable lesson record  
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 
 This file records the learner's durable understanding, corrected
 misconceptions, and next teaching checkpoint. It does not replace the project
@@ -306,3 +306,23 @@ receipt-time dependencies rather than deleting whole days automatically.
 Construct the gap-aware Binance feature/proxy view and measure how many rows
 remain valid after the 60-second lookback and receipt-time rules. Keep official
 Chainlink labels and Polymarket source completeness as a separate research gate.
+
+## Lesson 7 — Proxy Model-View Quality Gate
+
+### Implementation completed
+
+The corrected proxy pipeline now produces a structurally reviewed model view
+with balanced labels, chronological keys, finite features, and explicit
+exclusion accounting. The initial review caught a feature-definition defect:
+the feature builder had accidentally used the latest one-second return as
+`return_1m`. Package `0.6.1` now computes the net return over the complete
+60-second lookback, and the remote rerun confirms that `return_1m` has a
+distinct range from `return_1s`. Exact measurements are in
+`docs/evidence/2026-08-15-colab-proxy-model-review-after-fix.md`.
+
+### Current checkpoint
+
+The Binance proxy engineering-view gate is complete. This is not yet the
+official Polymarket research dataset because the Chainlink settlement target
+and official outcomes remain unresolved. The next teaching checkpoint is to
+define a chronological train/evaluation split without randomizing windows.

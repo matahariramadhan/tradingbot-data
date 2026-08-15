@@ -188,15 +188,15 @@ map and report before derived work runs. Exact preflight scope is in
   proxy model-view quality review. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.6.1` implementation now provides the next proxy dataset-quality
+- The package `0.6.1` implementation now provides the proxy dataset-quality
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
   model features, canonicalizes equivalent UTC timestamp text before matching,
   invalidates stale checkpoints when the implementation changes, and reviews
   label balance, finite numeric features, chronology, and exclusions. Its
-  22-test local suite passes. The remote review passed its structural checks,
-  but exposed a feature-semantic defect described below. Exact design is in
+  22-test local suite passes. The initial remote review exposed a feature-
+  semantic defect that was corrected before the final review. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - The corrected proxy join has now run remotely. It produced 8,352 audit rows
   and 8,292 leakage-safe model-ready rows across the 29 eligible days; 60 rows
@@ -204,21 +204,28 @@ map and report before derived work runs. Exact preflight scope is in
   three initial Binance features plus identifiers, label, and proxy-source
   metadata. Exact measurements and Drive paths are in
   `docs/evidence/2026-08-15-colab-proxy-join.md`.
-- The remote proxy model-view review completed with 8,292 model rows, 4,153
-  `UP` labels, 4,139 `DOWN` labels, 60 exclusions, and globally chronological
+- The pre-fix remote proxy model-view review completed with 8,292 model rows,
+  4,153 `UP` labels, 4,139 `DOWN` labels, 60 exclusions, and globally chronological
   model keys. Its exact report and excluded-row output are recorded in
   `docs/evidence/2026-08-15-colab-proxy-model-review.md`. The structural gate
-  passed, but the current feature builder assigns `return_1m` to the latest
+  passed, but the pre-fix feature builder assigned `return_1m` to the latest
   one-second return in the lookback (`returns[-1]`), duplicating `return_1s`.
   The intended policy is the net return from the first to the last close over
-  the complete 60-second lookback. Do not train or evaluate until this is
-  corrected and the affected views are regenerated.
+  the complete 60-second lookback. That pre-fix output is evidence only and
+  must not be used for training or evaluation.
 - The `return_1m` fix is now implemented and regression-tested in package
   `0.6.1`. The pinned notebook invalidates old feature outputs when their
   persisted package revision/version does not match the current run, so the
   corrected feature view will not be silently skipped. Exact implementation
   and test evidence are in
   `docs/evidence/2026-08-15-net-return-feature-fix.md`.
+- The post-fix remote review completed with the same 8,352 audit rows, 8,292
+  model rows, 60 exclusions, balanced labels, and chronological keys. The
+  corrected `return_1m` range is `-0.0029595776` to `0.0071434727`, distinct
+  from the `return_1s` range. Exact final measurements are in
+  `docs/evidence/2026-08-15-colab-proxy-model-review-after-fix.md`. The
+  Binance proxy engineering-view gate is complete; official Chainlink target
+  recovery and the later Polymarket-faithful dataset remain unresolved.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -339,10 +346,9 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the pinned `0.6.1` notebook so it regenerates the affected remote
-   feature, target-join, and review outputs, then verify the corrected
-   `return_1m` statistics and define a chronological baseline train/evaluation
-   split. Do not randomize windows or train from the pre-fix model view.
+1. Define a chronological baseline train/evaluation split for the corrected
+   proxy engineering view. Do not randomize windows. Keep this proxy baseline
+   separate from final official Polymarket claims.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be
