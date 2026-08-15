@@ -83,9 +83,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes the proxy quality-review
-  implementation; its code commit is `f2bcd78` and the notebook is being
-  repinned to package `0.6.0` at that commit.
+- Git origin is configured. Local `main` includes the corrected proxy
+  feature-view implementation at `a3e038a`; the notebook is being repinned to
+  package `0.6.1` at that commit.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -182,20 +182,20 @@ map and report before derived work runs. Exact preflight scope is in
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
 - The Colab notebook is now a 31-cell Phase 1 runbook pinned to package
-  commit `f2bcd784f3a54331069f088d5d182a407c51f7bf` (`0.6.0`). It verifies control
+  commit `a3e038a648ed8d182377147eddd64742bfc50495` (`0.6.1`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
   proxy model-view quality review. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.6.0` implementation now provides the next proxy dataset-quality
+- The package `0.6.1` implementation now provides the next proxy dataset-quality
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
   model features, canonicalizes equivalent UTC timestamp text before matching,
   invalidates stale checkpoints when the implementation changes, and reviews
   label balance, finite numeric features, chronology, and exclusions. Its
-  21-test local suite passes. The remote review passed its structural checks,
+  22-test local suite passes. The remote review passed its structural checks,
   but exposed a feature-semantic defect described below. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - The corrected proxy join has now run remotely. It produced 8,352 audit rows
@@ -213,6 +213,12 @@ map and report before derived work runs. Exact preflight scope is in
   The intended policy is the net return from the first to the last close over
   the complete 60-second lookback. Do not train or evaluate until this is
   corrected and the affected views are regenerated.
+- The `return_1m` fix is now implemented and regression-tested in package
+  `0.6.1`. The pinned notebook invalidates old feature outputs when their
+  persisted package revision/version does not match the current run, so the
+  corrected feature view will not be silently skipped. Exact implementation
+  and test evidence are in
+  `docs/evidence/2026-08-15-net-return-feature-fix.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -333,11 +339,10 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Correct the `return_1m` computation to use the net 60-second lookback
-   return, add a regression test, regenerate the affected remote feature,
-   target-join, and review outputs, then define a chronological baseline
-   train/evaluation split. Do not randomize windows or train from the current
-   semantically defective model view.
+1. Run the pinned `0.6.1` notebook so it regenerates the affected remote
+   feature, target-join, and review outputs, then verify the corrected
+   `return_1m` statistics and define a chronological baseline train/evaluation
+   split. Do not randomize windows or train from the pre-fix model view.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

@@ -51,8 +51,8 @@ clear message rather than silently rebuilding or guessing it.
 
 ## 1. Clone a pinned revision
 
-Use the repository URL and the reviewed join-capable commit
-`f2bcd784f3a54331069f088d5d182a407c51f7bf`:
+Use the repository URL and the reviewed feature-corrected commit
+`a3e038a648ed8d182377147eddd64742bfc50495`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The quality-review-capable package revision is `0.6.0`. Do not run recovery,
+The quality-review-capable package revision is `0.6.1`. Do not run recovery,
 joining, or review from an unpinned working tree. After commit
-`f2bcd784f3a54331069f088d5d182a407c51f7bf` is available from the repository,
+`a3e038a648ed8d182377147eddd64742bfc50495` is available from the repository,
 run:
 
 ```python

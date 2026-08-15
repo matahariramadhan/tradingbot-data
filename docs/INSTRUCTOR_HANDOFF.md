@@ -116,8 +116,8 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. Those 28 observations have now
   been applied in the separate recovered target view.
-- The Colab notebook is now a 31-cell Phase 1 runbook being repinned to package
-  `f2bcd784f3a54331069f088d5d182a407c51f7bf` (`0.6.0`). It verifies existing
+- The Colab notebook is now a 31-cell Phase 1 runbook pinned to package
+  `a3e038a648ed8d182377147eddd64742bfc50495` (`0.6.1`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
   recovery into a separate target view, adds a resumable model-ready join, and
   adds a proxy model-view quality review.
@@ -146,13 +146,14 @@ regenerate the affected views before designing a chronological baseline split.
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
-three initial feature columns. It is package `0.6.0` at commit
-`f2bcd784f3a54331069f088d5d182a407c51f7bf`, has passed 21 local tests, and the
+  three initial feature columns. It is package `0.6.1` at commit
+  `a3e038a648ed8d182377147eddd64742bfc50495`, has passed 22 local tests, and the
 quality review has completed remotely with 8,292 model rows and balanced
 labels. Before training, fix the feature builder's `return_1m = returns[-1]`
-assignment: it duplicates `return_1s` instead of computing the net return over
-the 60-second lookback. Regenerate and review the affected views after the
-fix.
+assignment has now been fixed to compute the net return over the 60-second
+lookback. The pinned notebook also invalidates old feature outputs when their
+package provenance does not match. Run it and review the regenerated views
+before training.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.
