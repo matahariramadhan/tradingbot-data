@@ -387,3 +387,13 @@ The learner is transferring back to the lower-cost mentor. The next lesson is
 training-period-only EDA of whether signed minute direction behaves differently
 across volatility regimes. The six observed evaluation days are frozen during
 that exploration.
+
+The learner then clarified and accepted the intended abstraction boundary:
+Binance is sufficient for the active ML-learning and BTC-direction
+signal-development track; Chainlink is required later to validate the exact
+Polymarket settlement label; and Polymarket data becomes necessary when moving
+from direction prediction to market-window timing, executable prices,
+liquidity, and Trade versus No Trade. The learner also recognized that these
+sources should be swappable behind interfaces rather than entangled throughout
+the pipeline. The canonical project rule is
+`docs/DATA_QUALITY_POLICY.md` rule 19.

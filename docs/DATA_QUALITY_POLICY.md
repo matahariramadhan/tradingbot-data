@@ -74,6 +74,15 @@ Scope: First BTC feature pipeline
     recovered target view. Keep the original target view unchanged, preserve
     the recovered boundary's interval and receipt provenance, and leave
     ambiguous or unrecoverable boundaries invalid.
+19. Binance data may remain the active source for learning, BTC-direction
+    signal development, and proxy experiments. Official Chainlink labels are
+    deferred until Polymarket-faithful validation, where they are still
+    required because they define the outcome that the market pays. Polymarket
+    market data is not required for direction-only proxy experiments, but it is
+    required when evaluating entry timing, executable prices, liquidity, and
+    Trade versus No Trade. Keep these responsibilities behind separate data
+    interfaces so changing the target or market-data source does not require
+    rebuilding the prediction pipeline.
 
 ## Initial Output Fields
 

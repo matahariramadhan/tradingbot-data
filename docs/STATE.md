@@ -286,10 +286,13 @@ documentation, tests, small fixtures, and compact reports or model artifacts.
 The specific remote compute/storage provider has not yet been selected.
 
 The accepted target architecture has two separate tracks. A Binance-derived
-proxy target may be used now to build and validate the engineering pipeline. The
-official Chainlink target remains mandatory for final Polymarket research
-claims. Target records must identify `label_source` so proxy and official
-results cannot be mixed.
+proxy target is the active learning and BTC-direction signal-development track.
+The official Chainlink target is deferred until Polymarket-faithful validation,
+where it remains mandatory for final Polymarket claims. Polymarket market data
+enters when the project studies entry timing, executable prices, liquidity, and
+Trade versus No Trade. Target records must identify `label_source` so proxy and
+official results cannot be mixed. The canonical separation is defined in
+`docs/DATA_QUALITY_POLICY.md` rule 19.
 
 The first proxy experiment is now defined as a clean future-window task:
 decision time equals the proxy window start and the target ends five minutes
@@ -404,13 +407,17 @@ Exact measurements, scope, and supporting sources are owned by
    counts, before proposing one explicit second experiment. Do not use the six
    observed evaluation days for exploratory feature selection or call them an
    untouched test set afterward. Keep all proxy results separate from final
-   official Polymarket claims.
+   official Polymarket claims. Continue with hypothesis-driven Binance signal
+   research after this EDA when justified; missing Chainlink data is not the
+   current learning bottleneck.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
-3. Determine which historical Chainlink labels and reference values can be
-   recovered.
+3. Increase clean Binance historical coverage before claiming that the current
+   three-feature result generalizes or spending the frozen six-day period on
+   repeated tuning.
 4. Correct or replace the recorder before collecting additional research data.
-5. Define and evaluate the official in-window dataset separately from the
-   proxy dataset.
+5. Later, recover Chainlink labels and define the official in-window dataset
+   separately from the proxy dataset; add Polymarket prices and liquidity when
+   the research reaches executable Trade versus No Trade decisions.
 
 No model training should begin from the sample archive alone.

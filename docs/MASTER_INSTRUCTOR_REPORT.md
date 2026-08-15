@@ -82,6 +82,9 @@ The learner accepted these durable design choices:
 
 - use a separate Binance proxy for engineering validation and reserve
   Chainlink-based labels for final research claims;
+- continue learning and BTC-direction signal development with Binance data,
+  deferring Chainlink to Polymarket-faithful validation and Polymarket data to
+  executable decision research;
 - start with a clean five-minute future-window proxy where decision time equals
   window start;
 - use the completed one-second closes immediately before the proxy start and
@@ -156,8 +159,9 @@ lower-cost mentor for a training-period-only diagnostic EDA of the original
 directional-regime hypothesis. Use signed minute-return bins, volatility
 regimes, and explicit bin counts; do not inspect the six evaluation days while
 selecting a second feature or model. Approve at most one explicit second
-experiment after the EDA, or stop proxy iteration if no credible pattern
-appears. Do not claim trading performance.
+experiment after the EDA. If no credible pattern appears, propose the next
+hypothesis-driven Binance signal or data-coverage improvement rather than
+redirecting the learner to Chainlink. Do not claim trading performance.
 
 ## Resume Instructions
 

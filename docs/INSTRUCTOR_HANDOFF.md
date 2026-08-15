@@ -57,8 +57,11 @@ Show sample counts with every bin and avoid conclusions from tiny tail groups.
 Use no evaluation-period rows while selecting bins, interactions, or candidate
 features. If training-only EDA suggests one interpretable nonlinear pattern,
 write one explicit hypothesis and validation plan before implementing a second
-experiment. If it shows no credible pattern, stop iterating on this proxy view
-and return priority to official Chainlink/Polymarket target recovery.
+experiment. If it shows no credible pattern, report that conclusion and propose
+the next hypothesis-driven Binance signal or data-coverage improvement. Do not
+redirect the learner to Chainlink merely because this three-feature proxy view
+is weak: Chainlink is deferred to later Polymarket-faithful validation under
+`docs/DATA_QUALITY_POLICY.md` rule 19.
 
 Do not introduce a tree ensemble, neural network, GPU, backtest, or trading
 logic at this checkpoint. Ask only two or three interpretation questions, and
@@ -117,8 +120,12 @@ The student currently understands the distinction between:
   the row remains auditable but is not eligible for labeled training until the
   official target is recovered.
 - A separate Binance-proxy dataset is now accepted for engineering validation,
-  but it must carry `label_source` and remain separate from official research
-  results.
+  learning, and BTC-direction signal development, but it must carry
+  `label_source` and remain separate from official research results.
+- Chainlink is a later Polymarket-faithful label-validation requirement, not the
+  current learning bottleneck. Polymarket data enters when the project studies
+  market-window context, executable prices, liquidity, and Trade versus No
+  Trade.
 - The first proxy task is a clean five-minute future-window experiment where
   decision time equals window start. The later official task may make its
   decision inside a fixed market window; these evaluations must stay separate.
