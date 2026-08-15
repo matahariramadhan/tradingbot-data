@@ -41,6 +41,10 @@ canonical definitions. It does not restate those definitions.
 | D-031 | 2026-08-15 | Continue learning and BTC-direction signal development with Binance data; defer Chainlink to Polymarket-faithful label validation and Polymarket data to executable decision research | `docs/DATA_QUALITY_POLICY.md` rule 19 |
 | D-032 | 2026-08-15 | Expand Binance direction research into separate 5-minute, 15-minute, and 60-minute tasks with horizon-specific chronological evaluation | `docs/DATA_QUALITY_POLICY.md` rule 20 |
 | D-033 | 2026-08-15 | Supersede D-032 as the active learning scope: focus only on the 15-minute Binance direction task and postpone other horizon comparisons | `docs/DATA_QUALITY_POLICY.md` rule 21 |
+| D-034 | 2026-08-15 | For the beginner 15-minute slice, use historical Binance 1-minute klines with an explicit interval-completion availability assumption because original client receipt times are absent; validate this limitation later against recorder data | `docs/DATA_QUALITY_POLICY.md` rule 22 |
+| D-035 | 2026-08-15 | Build the active 15-minute regime-feature dataset from an independent Binance historical source with at least 100 daily candles of warm-up; aggregate completed 1-minute data into 1-hour, 4-hour, and daily context and summarize the daily history into interpretable features | `docs/DATA_QUALITY_POLICY.md` rule 23 |
+| D-036 | 2026-08-15 | Narrow the first implementation to the 12-feature short-term 15-minute block and defer 100-day, 1-hour, and 4-hour regime features until the complete short-term loop is understood | `docs/DATA_QUALITY_POLICY.md` rule 24 |
+| D-037 | 2026-08-15 | Use historical Binance 1-minute klines while predicting only at fixed UTC quarter-hours, with non-overlapping 15-minute targets and 5-minute/15-minute/30-minute features derived from the same 1-minute source | `docs/DATA_QUALITY_POLICY.md` rule 25 |
 
 New entries are append-only. If a decision is superseded, append a new entry and
 link both entries to the new canonical definition; do not rewrite the old row.

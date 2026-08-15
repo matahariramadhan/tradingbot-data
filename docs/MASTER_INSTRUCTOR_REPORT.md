@@ -50,6 +50,9 @@ The learner can explain and apply:
 - the current verified split totals: 6,586 training rows and 1,706 later
   evaluation rows from 8,292 model-ready rows;
 - why this small three-feature baseline should run on CPU rather than a GPU;
+- the distinction between historical Binance interval timestamps and original
+  client receipt times, and the accepted `interval_complete_assumption` for
+  the new beginner 15-minute slice;
 - per-input checksums, audit/code versions, policy versions, resumable capture
   groups, verified completion, and manifest/output consistency.
 
@@ -104,6 +107,19 @@ The learner accepted these durable design choices:
   from an upload filename.
 - use the first 23 eligible UTC days for proxy training and the final 6 days
   for proxy evaluation, without randomization or key overlap.
+- use historical Binance 1-minute klines for the beginner 15-minute dataset,
+  while explicitly treating availability as an interval-completion assumption
+  rather than receipt-time-verified data.
+- obtain that history independently of the recorder archive, reserve at least
+  100 completed daily candles for warm-up, aggregate the same source into
+  1-hour, 4-hour, and daily context, and summarize the daily history into
+  interpretable regime features using only completed candles.
+- For the first implementation, the learner narrowed the scope to the
+  12-feature short-term block and deferred the 100-day, 1-hour, and 4-hour
+  regime block until the short-term loop is complete.
+- The V1 timing architecture is fixed: historical 1-minute Binance data,
+  predictions at UTC quarter-hours, non-overlapping 15-minute targets, and
+  5-minute/15-minute/30-minute context derived from that same source.
 
 ## Implementation Completed
 
@@ -123,6 +139,12 @@ The project now contains:
 - human-readable notebook checkpoints for model-view health, chronological
   separation, classification errors, calibration, probability separation, and
   standardized coefficients.
+- package `0.9.0` at commit
+  `91507cf3303bc0a88977091c3601175b3acd21e4` adds the independent historical
+  Binance 1-minute downloader and leakage-safe 15-minute dataset builder.
+  The separate `historical_binance_15m.ipynb` runbook checkpoints each UTC day
+  on Drive and publishes audit, model-ready, and chronological split reports.
+  Local tests pass; the remote historical source has not yet been run.
 
 The local end-to-end reproduction completed the legacy sample, verified its
 output, and safely skipped it on a subsequent run. Exact measurements are in the
@@ -157,10 +179,12 @@ backtesting, paper trading, and live trading remain deferred.
 ## Recommended Next Lesson
 
 The completed five-minute baseline is now preserved as historical engineering
-evidence. The learner is returning to the lower-cost mentor for one simpler
-task: build an understandable historical Binance dataset for non-overlapping
-15-minute direction labels, visualize it, and persist a chronological
-train/validation/final-holdout definition. Keep the implementation internally
+evidence. The implementation for the simpler historical Binance dataset is
+complete. Run the separate notebook remotely, review source coverage and
+usable-row counts, and explicitly accept or revise its proposed 20/4/5
+chronological split before training. Historical REST klines do not carry the
+original client receipt time, so this slice must disclose its
+`interval_complete_assumption`. Keep the implementation internally
 configurable, but do not teach or compare other horizons yet. Do not claim
 trading performance.
 

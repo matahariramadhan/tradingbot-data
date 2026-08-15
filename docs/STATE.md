@@ -25,6 +25,20 @@ rows for audit, while `--model-only` provides the initial filtered view.
 The initial data-quality rules for that feature are defined in
 `docs/DATA_QUALITY_POLICY.md`.
 
+The separate historical Binance 15-minute learning slice is now implemented
+in package `0.9.0` at commit
+`91507cf3303bc0a88977091c3601175b3acd21e4`. Its downloader stores independent
+BTCUSDT 1-minute historical klines as one UTC-day CSV per work unit and
+checkpoints on Google Drive. Its dataset builder emits fixed quarter-hour
+audit rows, a model-ready view with the twelve accepted short-term features,
+and a chronological train/validation/holdout report. Local tests and a
+synthetic interruption/resume path pass. It has not yet been run against the
+remote historical source, so no historical dataset counts are established.
+
+The corresponding separate Colab runbook is
+`historical_binance_15m.ipynb`; the completed 41-cell recorder/proxy notebook
+remains unchanged.
+
 An as-of decision snapshot builder now exists at
 `scripts/build_decision_snapshot.py`; it applies both interval-completion and
 receipt-time cutoffs, but it does not yet create a labeled research dataset.
@@ -85,10 +99,13 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Package version `0.8.1` is pinned for Colab at
+- Git origin is configured. The completed recorder/proxy notebook remains
+  pinned to package version `0.8.1` at
   `63cbd647953d203abab23ccd5d27c9a87aec3d4a`; its distribution metadata and
   module version are verified equal, and its training extra reconstructs the
-  visualization environment.
+  visualization environment. The separate historical notebook is pinned to
+  package `0.9.0` at
+  `91507cf3303bc0a88977091c3601175b3acd21e4`.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -306,6 +323,24 @@ and comparing 5-minute and 60-minute tasks is postponed until the learner is
 comfortable with the complete 15-minute loop. This simplification supersedes
 the earlier multi-horizon scope under `docs/DATA_QUALITY_POLICY.md` rule 21.
 
+For this beginner slice, use historical Binance 1-minute klines rather than
+the heavy recorder archive. Historical klines provide interval timestamps and
+OHLCV values but not the original client receipt time, so the dataset must
+declare `interval_complete_assumption` instead of claiming receipt-time
+verification. Validate this simplification later against recorder data with
+`received_at_utc`; do not restart the completed proxy pipeline for it.
+
+The first feature implementation is intentionally narrower: it uses an
+independent Binance historical source and the 12-feature short-term block
+(`return_1m`, `return_5m`, `return_15m`, `return_30m`, `volatility_5m`,
+`volatility_15m`, `volume_ratio_5m`, `candle_body`, `high_low_range`,
+`distance_ma_15`, `ma_slope_15`, and `rsi_14`). Each feature uses only
+completed historical 1-minute data before the decision time. The 100-day,
+1-hour, and 4-hour regime block is deferred until this first loop is complete.
+The prediction cadence is fixed at UTC quarter-hours (`00`, `15`, `30`, `45`),
+with one non-overlapping 15-minute target per decision. The raw source remains
+1-minute data so the accepted short-term features can be derived consistently.
+
 For the initial proxy baseline, the accepted chronological split uses the first
 23 eligible UTC days for training (`2026-06-30` through `2026-07-22`) and the
 final 6 eligible UTC days for evaluation (`2026-07-23` through `2026-07-28`).
@@ -407,9 +442,10 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Build a simple reusable historical Binance dataset pipeline for one
-   non-overlapping 15-minute direction target. Start with a transparent feature
-   baseline and one chronological train/validation/final-holdout design.
+1. Run `historical_binance_15m.ipynb` remotely. Let the Drive-backed downloader
+   and dataset builder complete, then review historical source coverage,
+   feature-valid row counts, target-valid row counts, and the proposed
+   chronological split before training.
 2. Preserve the completed five-minute baseline as engineering evidence; do not
    keep tuning or extending that observed split.
 3. Preserve the unresolved July 28 boundary and the intraday missing-boundary

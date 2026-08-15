@@ -54,6 +54,37 @@ Build the smallest understandable end-to-end historical-data slice that:
 3. shows a few human-readable feature and label plots; and
 4. persists a chronological train/validation/final-holdout definition.
 
+The learner accepted historical Binance 1-minute klines for this slice. Their
+REST records contain interval timestamps and OHLCV values, not the original
+client receipt time, so use and disclose the `interval_complete_assumption`.
+Do not call this dataset receipt-time verified; recorder data can validate that
+limitation later.
+
+The learner also accepted an independent Binance historical source rather than
+the existing recorder archive, at least 100 completed daily candles of warm-up,
+and multi-timeframe aggregation from the same 1-minute source. Summarize the
+100 daily candles into interpretable regime features and use only the last
+completed 1-hour, 4-hour, or daily candle at each decision time.
+
+For the first implementation, the learner narrowed the scope to these
+short-term features: `return_1m`, `return_5m`, `return_15m`, `return_30m`,
+`volatility_5m`, `volatility_15m`, `volume_ratio_5m`, `candle_body`,
+`high_low_range`, `distance_ma_15`, `ma_slope_15`, and `rsi_14`. Defer the
+long-term regime block until this loop is complete.
+
+The learner accepted the V1 timing architecture: use historical Binance
+1-minute klines as the raw source, predict only at fixed UTC quarter-hours,
+create non-overlapping 15-minute targets, and derive 5-minute, 15-minute, and
+30-minute context from the same 1-minute source.
+
+The implementation checkpoint is now complete in package `0.9.0` at commit
+`91507cf3303bc0a88977091c3601175b3acd21e4`. The separate
+`historical_binance_15m.ipynb` runbook downloads independent historical
+BTCUSDT 1-minute klines, checkpoints one UTC day at a time on Drive, builds
+fixed quarter-hour rows, and publishes audit/model/split reports. Local tests
+cover future-feature isolation, missing-boundary preservation, output
+verification, chronological split uniqueness, and rerun skipping.
+
 Keep the horizon configurable internally, but do not expose or compare other
 horizons in this lesson. Do not introduce a tree ensemble, neural network, GPU,
 backtest, or trading logic yet. Ask only two or three interpretation questions
@@ -162,9 +193,11 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-Start the single-horizon 15-minute historical Binance dataset slice described
-above. The first deliverable is a small, observable dataset and split report,
-not a stronger model.
+Run the separate historical notebook remotely. Review its persisted source
+coverage and usable-row counts before training. It proposes 20 training days,
+4 validation days, and 5 final holdout days for the 29 target days; obtain the
+learner's explicit acceptance of that split before treating it as the durable
+experiment design. Do not restart the completed recorder/proxy lessons.
 
 The completed baseline was correct on 854 of 1,706 later evaluation rows,
 versus 845 for the training-majority baseline; ROC-AUC was 0.487225 and

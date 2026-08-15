@@ -1,10 +1,12 @@
 # Google Colab Runbook
 
 This is the execution handoff for the remote archive and derived-view workflow.
-The ordered `tradingbot_data.ipynb` is the maintained Colab runbook. Colab runs
-the package; Google Drive stores raw archives, manifests, coverage maps, and
-derived outputs. The repository must contain code and runbook documentation,
-not raw data.
+The ordered `tradingbot_data.ipynb` is the maintained completed-pipeline
+runbook. The separate `historical_binance_15m.ipynb` is the active simple
+historical Binance direction-data lesson. Colab runs the package; Google Drive
+stores raw archives, manifests, coverage maps, checkpoints, and derived
+outputs. The repository must contain code and runbook documentation, not raw
+data.
 
 ## Stateless Colab contract
 
@@ -163,6 +165,36 @@ publish a new feature identity and regenerate affected outputs.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.
+
+## Historical 15-minute Binance direction slice
+
+This slice deliberately does not rerun the completed recorder/archive workflow.
+It uses package `0.9.0`, pinned at commit
+`91507cf3303bc0a88977091c3601175b3acd21e4`, and is run through
+`historical_binance_15m.ipynb`.
+
+The notebook downloads independent BTCUSDT 1-minute klines for
+`2026-06-29` through `2026-07-28` inclusive. The extra June 29 day supplies
+lookback history; target rows cover June 30 through July 28 inclusive. The
+downloader writes one CSV per UTC day and checkpoints after each day. The
+dataset builder writes one 96-row audit CSV per target day and checkpoints
+after each day. Both rerun safely from Google Drive after a Colab interruption.
+
+The model-ready view contains the twelve accepted short-term features and label
+metadata. It excludes target prices and target returns. The audit view retains
+target details and invalid rows for review. The builder also writes a
+chronological train/validation/holdout report and verifies unique, disjoint,
+chronological model keys before publishing it.
+
+The notebook currently proposes 20 training days, 4 validation days, and 5
+final holdout days for the 29 target days. Treat those counts as a reviewable
+experiment choice until the learner accepts them; they are not an official
+Polymarket evaluation split. Do not train or trade from this notebook yet.
+
+Run the notebook from top to bottom after a runtime reset. Its only durable
+inputs and outputs are the Git revision and the Drive paths defined in its
+cells. If the raw download or dataset build is interrupted, rerun the same
+cell; do not delete checkpoints or start a second output directory.
 
 ## 2. Mount Google Drive
 

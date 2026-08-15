@@ -413,3 +413,59 @@ engineering history, while 5-versus-15-versus-60-minute comparison is postponed
 until the learner understands the full 15-minute loop. This is a deliberate
 scope reduction, not a conclusion that 15 minutes is objectively best. The
 canonical rule is `docs/DATA_QUALITY_POLICY.md` rule 21.
+
+## Lesson 10 — Historical 15-Minute Direction Dataset
+
+### Accepted scope
+
+The learner accepted a new, simpler Binance-only learning slice. It uses
+historical 1-minute klines to construct non-overlapping 15-minute direction
+windows. It does not use Polymarket, Chainlink, GPU computation, trading logic,
+or the completed five-minute evaluation period.
+
+Historical REST klines contain market interval timestamps and OHLCV values but
+not the original client receipt time. The learner accepted an explicit
+`interval_complete_assumption`: a completed historical interval is treated as
+available after its interval closes, while the dataset is not called
+receipt-time verified. Recorder data with `received_at_utc` remains the later
+validation source.
+
+The learner rejected limiting the first 15-minute feature set to only immediate
+1-minute and 5-minute movement. The accepted regime-aware design obtains
+independent Binance history, keeps at least 100 completed daily candles as
+warm-up, aggregates the same 1-minute source into 1-hour, 4-hour, and daily
+candles, and summarizes the daily history into interpretable regime features.
+Each timeframe must use only its last completed candle at or before the decision
+time.
+
+The learner then narrowed the first implementation to a 12-feature short-term
+block: `return_1m`, `return_5m`, `return_15m`, `return_30m`, `volatility_5m`,
+`volatility_15m`, `volume_ratio_5m`, `candle_body`, `high_low_range`,
+`distance_ma_15`, `ma_slope_15`, and `rsi_14`. The long-term regime block is
+deferred until the short-term dataset-to-evaluation loop is understood.
+
+The learner accepted the V1 timing architecture: use historical Binance
+1-minute klines as the raw source, make predictions only at fixed UTC
+quarter-hours, create non-overlapping 15-minute targets, and derive the
+5-minute, 15-minute, and 30-minute context features from the same 1-minute
+source. Prediction cadence and raw-data frequency are intentionally distinct.
+
+### Next checkpoint
+
+Define the exact short-term feature formulas and target-period boundaries, then
+implement the chronological train/validation/final-holdout dataset builder.
+
+### Implementation checkpoint — 2026-08-15
+
+The formula and boundary implementation is complete in package `0.9.0` at
+commit `91507cf3303bc0a88977091c3601175b3acd21e4`. A separate stateless
+Colab notebook now downloads independent historical Binance 1-minute klines,
+checkpoints one UTC day at a time on Drive, and builds the audited 15-minute
+dataset with model-ready and chronological split reports. Local tests cover
+future-feature isolation, missing-boundary preservation, final-output
+verification, unique chronological keys, and rerun skipping.
+
+The next learning checkpoint is to run the notebook remotely and interpret its
+source coverage and usable-row counts. The notebook proposes 20 training
+days, 4 validation days, and 5 final holdout days; this split still needs the
+learner's explicit acceptance before it becomes the durable experiment design.

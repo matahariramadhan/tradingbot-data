@@ -103,6 +103,36 @@ Scope: First BTC feature pipeline
     completed five-minute baseline as historical engineering evidence. Revisit
     other horizons only after the learner is comfortable with the complete
     15-minute dataset-to-evaluation loop.
+22. For the active beginner 15-minute slice, use historical Binance 1-minute
+    klines and make the availability limitation explicit: historical REST
+    klines provide interval timestamps and OHLCV values, but not the original
+    client receipt time. Treat a completed interval as available under an
+    `interval_complete_assumption`; do not describe this dataset as
+    receipt-time verified. Preserve the interval timestamps and later validate
+    the assumption against recorder data that contains `received_at_utc`.
+23. For the active 15-minute regime-feature slice, obtain historical Binance
+    data independently of the existing recorder archive. Provide at least 100
+    completed daily candles before the target period as warm-up, aggregate the
+    same historical 1-minute source into 1-hour, 4-hour, and daily candles, and
+    use only the last completed candle at or before each decision time. Summarize
+    the 100 daily candles into interpretable regime features rather than placing
+    the raw 100-candle sequence directly into the first dataset. Keep all
+    horizon-specific target rows and feature summaries chronologically ordered.
+24. Supersede rule 23 for the first implementation scope: begin with the
+    short-term 15-minute feature block consisting of `return_1m`, `return_5m`,
+    `return_15m`, `return_30m`, `volatility_5m`, `volatility_15m`,
+    `volume_ratio_5m`, `candle_body`, `high_low_range`, `distance_ma_15`,
+    `ma_slope_15`, and `rsi_14`. All are computed from completed historical
+    1-minute data before the decision time. Defer the 100-day, 1-hour, and
+    4-hour regime block until this short-term dataset-to-evaluation loop is
+    complete; this is a staged scope choice, not a claim that long-term regime
+    features are unhelpful.
+25. For the first 15-minute dataset implementation, use historical Binance
+    1-minute klines as the raw source while making one prediction at each fixed
+    UTC quarter-hour (`00`, `15`, `30`, `45`). Build non-overlapping targets
+    for the following 15-minute window and derive the accepted 5-minute,
+    15-minute, and 30-minute context features from that same 1-minute source.
+    Prediction cadence and raw-data frequency are intentionally different.
 
 ## Initial Output Fields
 
