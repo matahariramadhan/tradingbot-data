@@ -148,19 +148,64 @@ def load_rows(path: Path) -> list[dict[str, str]]:
     return rows
 
 
+def resolve_start_boundary(
+    rows: list[dict[str, str]], row_index: int, boundary_ms: int
+) -> tuple[Decimal, datetime, str] | None:
+    """Return a verified start boundary, including legacy-output repair.
+
+    Early proxy-target outputs discarded the valid start boundary when only
+    the end boundary was missing.  The end of the immediately preceding
+    five-minute row is the same one-second observation as this row's start.
+    Reuse it only when the interval identity and provenance fields match
+    exactly; never synthesize a price from a neighboring value.
+    """
+
+    expected_interval = iso_from_ms(boundary_ms)
+    row = rows[row_index]
+    if (
+        row.get("proxy_start_interval_start_utc") == expected_interval
+        and row.get("proxy_start_price")
+        and row.get("proxy_start_available_at_utc")
+    ):
+        return (
+            Decimal(row["proxy_start_price"]),
+            parse_utc(row["proxy_start_available_at_utc"]),
+            "target_row_start",
+        )
+
+    if row_index == 0:
+        return None
+    previous = rows[row_index - 1]
+    if (
+        previous.get("window_end_utc") != row.get("window_start_utc")
+        or previous.get("proxy_end_interval_start_utc") != expected_interval
+        or not previous.get("proxy_end_price")
+        or not previous.get("proxy_end_available_at_utc")
+    ):
+        return None
+    return (
+        Decimal(previous["proxy_end_price"]),
+        parse_utc(previous["proxy_end_available_at_utc"]),
+        "previous_window_end",
+    )
+
+
 def patch_rows(
     rows: list[dict[str, str]],
     overrides: dict[int, dict[str, Any]],
 ) -> tuple[list[dict[str, str]], dict[str, Any]]:
     recovered: list[dict[str, Any]] = []
+    review_rows: list[dict[str, Any]] = []
     used_boundaries: set[int] = set()
-    for row in rows:
+    for row_index, row in enumerate(rows):
         if row["target_valid"] == "true":
             continue
         if row["target_quality_flag"] != "missing_end_boundary":
             continue
         try:
+            window_start = parse_utc(row["window_start_utc"])
             window_end = parse_utc(row["window_end_utc"])
+            start_boundary_ms = int(window_start.timestamp() * 1000) - 1000
             boundary_ms = int(window_end.timestamp() * 1000) - 1000
         except (KeyError, TypeError, ValueError) as error:
             raise ValueError(
@@ -174,18 +219,31 @@ def patch_rows(
                 f"boundary day mismatch for {row['window_start_utc']}: "
                 f"{override['target_day']}"
             )
-        if not row["proxy_start_price"] or not row["proxy_start_available_at_utc"]:
-            raise ValueError(
-                f"cannot recover an end boundary without a valid start: "
-                f"{row['window_start_utc']}"
+        start_boundary = resolve_start_boundary(rows, row_index, start_boundary_ms)
+        if start_boundary is None:
+            review_rows.append(
+                {
+                    "window_start_utc": row["window_start_utc"],
+                    "boundary_start_ms": boundary_ms,
+                    "reason": "missing_valid_start_boundary",
+                }
             )
+            continue
 
+        start_close, start_available_at, start_source = start_boundary
         end_close = override["close"]
-        start_close = Decimal(row["proxy_start_price"])
         end_available_at = override["available_at"]
-        start_available_at = parse_utc(row["proxy_start_available_at_utc"])
         decision_time = parse_utc(row["decision_time_utc"])
         target_available_at = max(start_available_at, end_available_at)
+
+        if start_source == "previous_window_end":
+            row["proxy_start_price"] = f"{start_close:.8f}"
+            row["proxy_start_interval_start_utc"] = iso_from_ms(start_boundary_ms)
+            row["proxy_start_available_at_utc"] = (
+                start_available_at.isoformat(timespec="microseconds").replace(
+                    "+00:00", "Z"
+                )
+            )
 
         row["proxy_end_price"] = f"{end_close:.8f}"
         row["proxy_end_interval_start_utc"] = iso_from_ms(boundary_ms)
@@ -217,6 +275,7 @@ def patch_rows(
                 "close": f"{end_close:.8f}",
                 "received_at_utc": row["proxy_end_available_at_utc"],
                 "quality_flag": row["target_quality_flag"],
+                "start_source": start_source,
             }
         )
 
@@ -224,6 +283,7 @@ def patch_rows(
         "rows": len(rows),
         "recovered_rows": len(recovered),
         "recovered_boundaries": recovered,
+        "review_rows": review_rows,
         "used_boundary_starts_ms": sorted(used_boundaries),
     }
 
@@ -339,6 +399,10 @@ def main() -> int:
             result.get("recovered_rows", 0)
             for result in state["days"].values()
         ),
+        "review_rows": sum(
+            len(result.get("review_rows", []))
+            for result in state["days"].values()
+        ),
         "used_recovered_boundaries": len(used_boundaries),
         "unused_recovered_boundaries": len(unused_boundaries),
         "unused_boundary_starts_ms": unused_boundaries,
@@ -346,7 +410,7 @@ def main() -> int:
     state["status"] = (
         "completed"
         if not incomplete_days and not boundary_metadata["ambiguous_boundaries"]
-        and not unused_boundaries
+        and not unused_boundaries and state["totals"]["review_rows"] == 0
         else "review"
     )
     write_json_atomic(output_report, state)

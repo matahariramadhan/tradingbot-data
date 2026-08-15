@@ -128,11 +128,11 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-After commit `6f5a0873b28024d62a72eb9f2411e79e9b299612` is pushed, run the
-repinned notebook. Review the separate recovered view for the 28 found final
-boundaries and verify its shape, provenance, and quality. Preserve the
-unresolved July 28 boundary and all intraday invalid rows; keep the proxy
-`label_source` separate from official label recovery.
+Publish the follow-up `0.4.1` recovery fix and repin the notebook before
+rerunning the failed recovery cell. Review the separate recovered view for the
+28 found final boundaries and verify its shape, provenance, and quality.
+Preserve the unresolved July 28 boundary and all intraday invalid rows; keep
+the proxy `label_source` separate from official label recovery.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

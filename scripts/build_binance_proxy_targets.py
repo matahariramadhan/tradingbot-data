@@ -131,6 +131,28 @@ def build_targets(
             "target_quality_flag": "",
         }
 
+        # Preserve each unambiguous boundary even when the other boundary is
+        # missing.  This matters for later review or a separately verified
+        # boundary recovery: a missing end must not erase a valid start.
+        if len(start_observations) == 1:
+            start_observation = start_observations[0]
+            row["proxy_start_price"] = f'{start_observation["close"]:.8f}'
+            row["proxy_start_interval_start_utc"] = iso_from_ms(
+                start_observation["start_ms"]
+            )
+            row["proxy_start_available_at_utc"] = start_observation[
+                "available_at"
+            ].isoformat(timespec="microseconds").replace("+00:00", "Z")
+        if len(end_observations) == 1:
+            end_observation = end_observations[0]
+            row["proxy_end_price"] = f'{end_observation["close"]:.8f}'
+            row["proxy_end_interval_start_utc"] = iso_from_ms(
+                end_observation["start_ms"]
+            )
+            row["proxy_end_available_at_utc"] = end_observation[
+                "available_at"
+            ].isoformat(timespec="microseconds").replace("+00:00", "Z")
+
         if len(start_observations) != 1 or len(end_observations) != 1:
             if len(start_observations) > 1 or len(end_observations) > 1:
                 counters["duplicate_boundary"] += 1
@@ -146,20 +168,6 @@ def build_targets(
 
         start_observation = start_observations[0]
         end_observation = end_observations[0]
-        row["proxy_start_price"] = f'{start_observation["close"]:.8f}'
-        row["proxy_start_interval_start_utc"] = iso_from_ms(
-            start_observation["start_ms"]
-        )
-        row["proxy_start_available_at_utc"] = start_observation[
-            "available_at"
-        ].isoformat(timespec="microseconds").replace("+00:00", "Z")
-        row["proxy_end_price"] = f'{end_observation["close"]:.8f}'
-        row["proxy_end_interval_start_utc"] = iso_from_ms(
-            end_observation["start_ms"]
-        )
-        row["proxy_end_available_at_utc"] = end_observation[
-            "available_at"
-        ].isoformat(timespec="microseconds").replace("+00:00", "Z")
         target_available_at = max(
             start_observation["available_at"], end_observation["available_at"]
         )

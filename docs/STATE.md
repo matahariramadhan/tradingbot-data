@@ -131,13 +131,19 @@ map and report before derived work runs. Exact preflight scope is in
   27 local canary produced 284 fully usable rows out of 288 requested windows;
   all 13 local tests passed. Exact scope and measurements are in
   `docs/evidence/2026-08-14-local-feature-view-canary.md`.
-- The local package `0.4.0` is committed at
-  `6f5a0873b28024d62a72eb9f2411e79e9b299612` but is not yet pushed. Its
-  `proxy-recover` command consumes the verified boundary report, writes a
-  separate recovered target directory, checkpoints after each day, verifies
-  output checksums, and leaves the original proxy-target CSVs untouched. The
-  local implementation test suite passes. Exact implementation scope is in
+- The package `0.4.0` recovery implementation is committed at
+  `6f5a0873b28024d62a72eb9f2411e79e9b299612`. Its `proxy-recover` command
+  consumes the verified boundary report, writes a separate recovered target
+  directory, checkpoints after each day, verifies output checksums, and leaves
+  the original proxy-target CSVs untouched. Exact implementation scope is in
   `docs/evidence/2026-08-15-proxy-boundary-recovery-implementation.md`.
+- A follow-up working-tree fix addresses a legacy derived-target bug exposed by
+  the first Colab recovery attempt: invalid rows had discarded an otherwise
+  valid boundary. The proxy builder now preserves partial boundaries, and
+  recovery can repair legacy final-window rows only from an exact adjacent
+  boundary. The local package version is `0.4.1`; it has not yet been
+  published or rerun remotely. Exact diagnosis and validation are in
+  `docs/evidence/2026-08-15-proxy-recovery-legacy-row-fix.md`.
 - The published `0.3.0` package has now run remotely across the first derived
   feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully
   usable and 36 retain invalidity flags. Twenty-eight days were processed and
@@ -298,10 +304,9 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Publish the reviewed local `0.4.0` recovery implementation, repin the Colab
-   notebook, and apply the 28 recovered boundary observations through its
-   explicit recovery step. Re-verify target shape, provenance, and quality
-   counts.
+1. Publish the reviewed `0.4.1` recovery fix, repin the Colab notebook, and
+   apply the 28 recovered boundary observations through its explicit recovery
+   step. Re-verify target shape, provenance, and quality counts.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be
