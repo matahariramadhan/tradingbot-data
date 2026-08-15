@@ -243,6 +243,14 @@ class ArchiveWorkflowTests(unittest.TestCase):
                 }
             )
         )
+        self.assertTrue(
+            feature_report_is_compatible(
+                {
+                    "package_revision": "45a317e9d215d935a496ed6ce0a9e5ff3ac35d45",
+                    "package_version": "0.7.0",
+                }
+            )
+        )
         self.assertFalse(
             feature_report_is_compatible(
                 {
