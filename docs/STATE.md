@@ -84,7 +84,7 @@ map and report before derived work runs. Exact preflight scope is in
 ## Available Artifacts
 
 - Git origin is configured. Local `main` includes stage-specific feature
-  provenance at `7c70fb2`; the notebook is being repinned to package `0.7.1`
+  provenance at `657adfd`; the notebook is being repinned to package `0.7.2`
   at that package commit.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
@@ -182,13 +182,13 @@ map and report before derived work runs. Exact preflight scope is in
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
 - The Colab notebook is now a 33-cell Phase 1 runbook pinned to package
-  commit `7c70fb2435865759fef231170da7e87eea1aa010` (`0.7.1`). It verifies control
+  commit `657adfd123767dee6bb4685ab4ee98a2c8314bd2` (`0.7.2`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
   proxy model-view quality review, and chronological proxy split report. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.7.1` implementation now provides the proxy dataset-quality
+- The package `0.7.2` implementation now provides the proxy dataset-quality
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
@@ -232,7 +232,7 @@ map and report before derived work runs. Exact preflight scope is in
   agreement with the quality review. Local tests pass; remote execution is
   pending. Exact implementation scope is in
   `docs/evidence/2026-08-15-chronological-proxy-split-implementation.md`.
-- Package `0.7.1` now separates feature-output provenance from global package
+- Package `0.7.2` now separates feature-output provenance from global package
   versioning. The next notebook run can reuse the verified corrected feature
   CSVs when only split/report code changed; only a feature implementation or
   policy identity change triggers the expensive raw scan. Exact scope is in
@@ -363,7 +363,7 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the pinned `0.7.1` notebook and verify the accepted chronological split
+1. Run the pinned `0.7.2` notebook and verify the accepted chronological split
    artifact: first 23 eligible UTC days for training and final 6 eligible UTC
    days for evaluation. Do not randomize windows. Keep this proxy baseline
    separate from final official Polymarket claims.
