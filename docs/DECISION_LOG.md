@@ -39,6 +39,7 @@ canonical definitions. It does not restate those definitions.
 | D-029 | 2026-08-15 | Apply uniquely sourced cross-archive boundary recoveries only into a separate verified proxy-target view; preserve the original target view and keep ambiguous or unrecoverable boundaries invalid | `docs/DATA_QUALITY_POLICY.md` rule 18 |
 | D-030 | 2026-08-15 | Use the first 23 eligible UTC days for the initial Binance-proxy training period and the final 6 eligible UTC days for evaluation; do not randomize windows | `docs/STATE.md` under **Recommended Next Work** |
 | D-031 | 2026-08-15 | Continue learning and BTC-direction signal development with Binance data; defer Chainlink to Polymarket-faithful label validation and Polymarket data to executable decision research | `docs/DATA_QUALITY_POLICY.md` rule 19 |
+| D-032 | 2026-08-15 | Expand Binance direction research into separate 5-minute, 15-minute, and 60-minute tasks with horizon-specific chronological evaluation | `docs/DATA_QUALITY_POLICY.md` rule 20 |
 
 New entries are append-only. If a decision is superseded, append a new entry and
 link both entries to the new canonical definition; do not rewrite the old row.

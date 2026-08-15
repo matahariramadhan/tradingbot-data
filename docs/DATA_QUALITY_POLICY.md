@@ -83,6 +83,17 @@ Scope: First BTC feature pipeline
     Trade versus No Trade. Keep these responsibilities behind separate data
     interfaces so changing the target or market-data source does not require
     rebuilding the prediction pipeline.
+20. The expanded Binance research track must support separate 5-minute,
+    15-minute, and 60-minute direction targets. For a horizon `H`, features use
+    only information available at decision time and the label compares the
+    verified Binance boundary immediately before the start with the boundary
+    immediately before `start + H`. Do not mix horizons into one unlabeled
+    result or infer that a longer horizon is easier before measuring it. Begin
+    with non-overlapping windows at each horizon, use chronological
+    train/validation/final-holdout periods, and report each horizon's sample
+    count, class balance, probability metrics, and regime behavior separately.
+    Select features, models, and horizons using training and validation data;
+    keep the final holdout untouched until the experiment is frozen.
 
 ## Initial Output Fields
 

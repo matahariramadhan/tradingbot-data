@@ -300,6 +300,11 @@ later. A later Polymarket-faithful task will keep fixed market start/end times
 separate from a decision time that may occur inside the market window. These are
 different prediction problems and their evaluations must remain separate.
 
+The expanded historical Binance track will parameterize that clean task into
+separate 5-minute, 15-minute, and 60-minute horizons. Longer horizons are
+candidate hypotheses, not presumed improvements. The comparison contract and
+holdout rules are defined in `docs/DATA_QUALITY_POLICY.md` rule 20.
+
 For the initial proxy baseline, the accepted chronological split uses the first
 23 eligible UTC days for training (`2026-06-30` through `2026-07-22`) and the
 final 6 eligible UTC days for evaluation (`2026-07-23` through `2026-07-28`).
@@ -412,9 +417,10 @@ Exact measurements, scope, and supporting sources are owned by
    current learning bottleneck.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
-3. Increase clean Binance historical coverage before claiming that the current
-   three-feature result generalizes or spending the frozen six-day period on
-   repeated tuning.
+3. Build a reusable historical Binance dataset pipeline with separately
+   identified 5-minute, 15-minute, and 60-minute targets. Increase clean history
+   before claiming that the current three-feature result generalizes or
+   spending the frozen six-day period on repeated tuning.
 4. Correct or replace the recorder before collecting additional research data.
 5. Later, recover Chainlink labels and define the official in-window dataset
    separately from the proxy dataset; add Polymarket prices and liquidity when

@@ -67,6 +67,14 @@ Do not introduce a tree ensemble, neural network, GPU, backtest, or trading
 logic at this checkpoint. Ask only two or three interpretation questions, and
 handle plotting mechanics for the learner.
 
+After this compact EDA lesson, design the next dataset layer around large
+historical Binance coverage. Parameterize the target horizon rather than
+hard-coding five minutes, and produce separate 5-minute, 15-minute, and
+60-minute tasks under `docs/DATA_QUALITY_POLICY.md` rule 20. Treat “a longer
+horizon may be easier” as a hypothesis. Do not use the already observed six-day
+evaluation period to choose the winning horizon, and do not jump to a stronger
+model before the expanded data and evaluation design are verified.
+
 ## Project Context
 
 The project studies machine-learning predictions for BTC-related Polymarket

@@ -85,6 +85,8 @@ The learner accepted these durable design choices:
 - continue learning and BTC-direction signal development with Binance data,
   deferring Chainlink to Polymarket-faithful validation and Polymarket data to
   executable decision research;
+- compare separate 5-minute, 15-minute, and 60-minute Binance direction tasks
+  instead of assuming the original five-minute horizon is optimal;
 - start with a clean five-minute future-window proxy where decision time equals
   window start;
 - use the completed one-second closes immediately before the proxy start and
@@ -162,6 +164,11 @@ selecting a second feature or model. Approve at most one explicit second
 experiment after the EDA. If no credible pattern appears, propose the next
 hypothesis-driven Binance signal or data-coverage improvement rather than
 redirecting the learner to Chainlink. Do not claim trading performance.
+
+The subsequent dataset milestone is a larger-history Binance pipeline with a
+parameterized horizon and separate 5-minute, 15-minute, and 60-minute tasks.
+Use chronological training, validation, and final-holdout periods for the new
+history; do not select the horizon from the already observed six-day result.
 
 ## Resume Instructions
 

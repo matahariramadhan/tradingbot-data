@@ -397,3 +397,11 @@ liquidity, and Trade versus No Trade. The learner also recognized that these
 sources should be swappable behind interfaces rather than entangled throughout
 the pipeline. The canonical project rule is
 `docs/DATA_QUALITY_POLICY.md` rule 19.
+
+The learner also proposed testing longer direction windows if five-minute BTC
+direction remains difficult. The accepted research response is comparative,
+not assumptive: build separate 5-minute, 15-minute, and 60-minute Binance tasks
+and measure them under horizon-specific chronological validation and untouched
+holdouts. This demonstrates an important experimental principle: target horizon
+is a hypothesis to evaluate, not a parameter to choose after inspecting final
+test performance. The canonical rule is `docs/DATA_QUALITY_POLICY.md` rule 20.
