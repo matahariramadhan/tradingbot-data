@@ -34,6 +34,36 @@ After compaction, continue from `docs/LEARNING_PROGRESS.md` and
 `docs/STATE.md`; do not redo completed work merely because the conversation is
 missing.
 
+## Master-to-Mentor Handoff — 2026-08-15
+
+The first Binance-proxy baseline has now been evaluated and is approximately
+chance-level. The learner is intentionally returning to the lower-cost mentor
+for the next execution and learning slice. Do not rerun the baseline, raw
+audits, feature scans, recovery, join, or chronological split while their
+persisted identities and checksums remain valid.
+
+The next slice is not “try a more powerful model.” Freeze the observed six-day
+evaluation result and use only the 6,586 training-period rows for diagnostic
+EDA of the original directional-regime hypothesis. Build human-readable plots
+that answer:
+
+1. Does proxy `UP` frequency change across signed `return_1m` quantiles?
+2. Does that relationship change between low- and high-`volatility_1m`
+   regimes?
+3. Does the latest `return_1s` appear to add information beyond the minute
+   direction, or is it mostly noise near zero?
+
+Show sample counts with every bin and avoid conclusions from tiny tail groups.
+Use no evaluation-period rows while selecting bins, interactions, or candidate
+features. If training-only EDA suggests one interpretable nonlinear pattern,
+write one explicit hypothesis and validation plan before implementing a second
+experiment. If it shows no credible pattern, stop iterating on this proxy view
+and return priority to official Chainlink/Polymarket target recovery.
+
+Do not introduce a tree ensemble, neural network, GPU, backtest, or trading
+logic at this checkpoint. Ask only two or three interpretation questions, and
+handle plotting mechanics for the learner.
+
 ## Project Context
 
 The project studies machine-learning predictions for BTC-related Polymarket
@@ -43,7 +73,8 @@ comparison, strategy and risk, and execution. The current work is research and
 education, not live trading.
 
 The project is in Phase 1: problem definition, market mechanics, and data
-foundations. Phase 1 is not complete. There is no research dataset, trained
+foundations. Phase 1 is not complete. A verified Binance-proxy engineering
+baseline now exists, but there is no official research dataset or official
 model, backtest, paper-trading system, or live-trading system yet.
 
 ## Learner Context
@@ -63,6 +94,10 @@ The student currently understands the distinction between:
 - model probability and market ask price;
 - prediction eligibility and supervised-training eligibility;
 - Binance predictive data and the official Chainlink-based target.
+- chronological training/evaluation separation and why future days must not
+  enter training;
+- the difference between a successful reproducible pipeline and a model whose
+  chance-level evaluation does not demonstrate predictive signal.
 
 ## Current Project Snapshot
 
@@ -128,16 +163,18 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-Run the three human visualization checkpoints. The first proxy baseline is
-complete and its Drive artifacts verify. It was
-correct on 854 of 1,706 later evaluation rows, versus 845 for the
-training-majority baseline; ROC-AUC was 0.487225 and probability losses were
-essentially coin-flip level.
+Start a training-period-only proxy EDA report. Reload the training-day list and
+per-day hashes from `proxy-split-v1.json`, read only those model-view CSVs, and
+persist the report and plots under
+`/content/drive/MyDrive/tradingbot-data-audit/proxy-training-eda-v1/`. The first
+deliverable is evidence about directional return versus volatility regimes,
+not another fitted model.
 
-Explain the metrics and ask whether the result justifies a second
-hypothesis-driven experiment. Do not repeatedly tune against the same six
-evaluation days or present this Binance-proxy result as an official Polymarket
-result or evidence of trading profitability.
+The completed baseline was correct on 854 of 1,706 later evaluation rows,
+versus 845 for the training-majority baseline; ROC-AUC was 0.487225 and
+probability losses were essentially coin-flip level. The six evaluation days
+have now been observed and must not guide exploratory feature selection while
+still being described as untouched.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

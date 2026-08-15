@@ -377,3 +377,13 @@ Interpret what each evaluation plot and confusion-matrix cell measures, then
 decide whether this result supports a second hypothesis-driven experiment. Do
 not treat a nine-row improvement as evidence of trading edge, and do not reuse
 the same evaluation period indefinitely while still calling it untouched.
+
+The first data-overview visualization rendered remotely. It confirms high
+model-row coverage, balanced proxy labels, returns concentrated near zero, and
+right-skewed volatility. The learner correctly redirected the explanation to
+the actual graph rather than accepting a repeated feature-definition lesson.
+
+The learner is transferring back to the lower-cost mentor. The next lesson is
+training-period-only EDA of whether signed minute direction behaves differently
+across volatility regimes. The six observed evaluation days are frozen during
+that exploration.

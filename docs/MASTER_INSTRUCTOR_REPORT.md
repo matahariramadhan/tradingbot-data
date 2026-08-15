@@ -149,14 +149,15 @@ backtesting, paper trading, and live trading remain deferred.
 
 ## Recommended Next Lesson
 
-Run the human checkpoint cells from package `0.8.1`, commit
-`63cbd647953d203abab23ccd5d27c9a87aec3d4a`, then teach the completed baseline
-result: 854 of 1,706 evaluation rows were correct,
-only nine more than the training-majority baseline; ROC-AUC was 0.487225 and
-the probability losses were essentially coin-flip level. Ask only the
-meaningful next questions: what the evaluation result measures, and whether it
-justifies a second hypothesis-driven experiment. Do not tune against the same
-evaluation period repeatedly or claim trading performance.
+The completed baseline was correct on 854 of 1,706 evaluation rows, only nine
+more than the training-majority baseline; ROC-AUC was 0.487225 and probability
+losses were essentially coin-flip level. The learner is returning to the
+lower-cost mentor for a training-period-only diagnostic EDA of the original
+directional-regime hypothesis. Use signed minute-return bins, volatility
+regimes, and explicit bin counts; do not inspect the six evaluation days while
+selecting a second feature or model. Approve at most one explicit second
+experiment after the EDA, or stop proxy iteration if no credible pattern
+appears. Do not claim trading performance.
 
 ## Resume Instructions
 

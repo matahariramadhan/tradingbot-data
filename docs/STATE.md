@@ -261,6 +261,12 @@ map and report before derived work runs. Exact preflight scope is in
   identity remains `0.8.0`, so verified baseline artifacts remain reusable.
   The notebook visualization design and local validation are recorded in
   `docs/evidence/2026-08-15-human-readable-colab-notebook.md`.
+- The first human data-overview cell rendered successfully in Colab from the
+  verified Drive artifacts. It showed the expected 29 daily model-view groups,
+  4,139 `DOWN` and 4,153 `UP` labels, concentrated return distributions, and a
+  right-skewed volatility distribution. This is a data-shape view, not evidence
+  of predictive separation. Exact scope is in
+  `docs/evidence/2026-08-15-colab-human-data-overview.md`.
 - Package `0.7.2` now separates feature-output provenance from global package
   versioning. The next notebook run can reuse the verified corrected feature
   CSVs when only split/report code changed; only a feature implementation or
@@ -392,11 +398,13 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the three human visualization checkpoints in pinned package `0.8.1`,
-   then interpret the chance-level proxy baseline and decide whether a second
-   hypothesis-driven experiment is justified. Do not repeatedly tune against
-   the same six evaluation days as though they remain an untouched test set.
-   Keep this proxy result separate from final official Polymarket claims.
+1. Freeze the observed chance-level baseline and build a training-period-only
+   proxy EDA for the directional-regime hypothesis. Inspect conditional proxy
+   `UP` rates across signed minute-return and volatility regimes, with bin
+   counts, before proposing one explicit second experiment. Do not use the six
+   observed evaluation days for exploratory feature selection or call them an
+   untouched test set afterward. Keep all proxy results separate from final
+   official Polymarket claims.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be
