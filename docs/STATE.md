@@ -83,10 +83,11 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` and `origin/main` are currently at
-  `bb6fc368d3c56656a98ef352120df93866cc9d30` (`docs: rewrite Phase 1 Colab
-  runbook`). The notebook pins the installable package at its parent feature
-  revision `8bc95e2333348fcce784d0a497f38c44bd1e3a66` (`0.3.0`).
+- Git origin is configured. Local `main` includes the follow-up notebook-pin
+  commit; `origin/main` remains at the previous `bb6fc36` until the user
+  pushes. The notebook pins the installable package at its recovery-capable
+  parent commit
+  `6f5a0873b28024d62a72eb9f2411e79e9b299612` (`0.4.0`).
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -130,13 +131,13 @@ map and report before derived work runs. Exact preflight scope is in
   27 local canary produced 284 fully usable rows out of 288 requested windows;
   all 13 local tests passed. Exact scope and measurements are in
   `docs/evidence/2026-08-14-local-feature-view-canary.md`.
-- The working tree now contains an unreleased local package `0.4.0` with a
-  `proxy-recover` command. It consumes the verified boundary report, writes a
+- The local package `0.4.0` is committed at
+  `6f5a0873b28024d62a72eb9f2411e79e9b299612` but is not yet pushed. Its
+  `proxy-recover` command consumes the verified boundary report, writes a
   separate recovered target directory, checkpoints after each day, verifies
   output checksums, and leaves the original proxy-target CSVs untouched. The
   local implementation test suite passes. Exact implementation scope is in
-  `docs/evidence/2026-08-15-proxy-boundary-recovery-implementation.md`; it is
-  not yet available in the published Colab revision.
+  `docs/evidence/2026-08-15-proxy-boundary-recovery-implementation.md`.
 - The published `0.3.0` package has now run remotely across the first derived
   feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully
   usable and 36 retain invalidity flags. Twenty-eight days were processed and
@@ -169,13 +170,14 @@ map and report before derived work runs. Exact preflight scope is in
   It searched all 30 source groups, found 28 of 29 requested final boundaries,
   and left `2026-07-28` unrecoverable from the scanned collection. Exact scope
   and consequence are in `docs/evidence/2026-08-15-colab-boundary-recovery.md`.
-- The Colab notebook was rewritten into a 23-cell Phase 1 runbook pinned to
-  package revision `8bc95e2333348fcce784d0a497f38c44bd1e3a66` (`0.3.0`). It
-  verifies control artifacts, runs feature and proxy views separately, and
-  stops before unresolved target boundaries are joined to features. Local
-  JSON and code-cell validation passed; the notebook was not re-executed
-  remotely during the rewrite. Exact scope is in
-  `docs/evidence/2026-08-15-colab-notebook-rewrite.md`.
+- The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
+  `6f5a0873b28024d62a72eb9f2411e79e9b299612` (`0.4.0`). It verifies control
+  artifacts, runs feature and proxy views separately, applies the verified
+  boundary recovery into a separate view, and stops before any model-ready
+  join. Local JSON and code-cell validation passed; it has not been rerun
+  remotely after this update. Exact rewrite history is in
+  `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
+  is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source

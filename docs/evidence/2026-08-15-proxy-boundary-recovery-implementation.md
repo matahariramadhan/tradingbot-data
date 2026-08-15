@@ -25,3 +25,9 @@ also stop the recovery report in review status.
 The implementation is currently uncommitted and unreleased. Colab must not use
 it until a reviewed package revision is published and the notebook is repinned
 to that revision.
+
+## Post-commit status
+
+The implementation and its tests were committed locally as
+`6f5a0873b28024d62a72eb9f2411e79e9b299612`. The commit has not yet been pushed,
+so the current remote Colab checkout cannot use it.

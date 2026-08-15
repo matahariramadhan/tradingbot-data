@@ -116,22 +116,23 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
   observations explicitly before any target/feature join.
-- The original Colab notebook has been replaced with a 23-cell pinned Phase 1
-  runbook. It verifies existing control artifacts, separates feature and proxy
-  generation, and stops at the unresolved boundary-recovery gate. Its
-  boundary scan checkpoints after each source archive, so interruption does
+- The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
+  `6f5a0873b28024d62a72eb9f2411e79e9b299612` (`0.4.0`). It verifies existing
+  control artifacts, separates feature and proxy generation, applies boundary
+  recovery into a separate target view, and stops before a model-ready join.
+  Its boundary scan checkpoints after each source archive, so interruption does
   not restart completed archive scans. Local structural and resumability smoke
-  tests passed; the boundary cell has now also completed remotely.
+  tests passed; the updated notebook has not yet been rerun remotely.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
-After the local `0.4.0` recovery implementation is reviewed, publish it and
-repin Colab. Then use the boundary report to build the separate recovered view
-for the 28 found final boundaries and verify its shape, provenance, and
-quality. Preserve the unresolved July 28 boundary and all intraday invalid
-rows; keep the proxy `label_source` separate from official label recovery.
+After commit `6f5a0873b28024d62a72eb9f2411e79e9b299612` is pushed, run the
+repinned notebook. Review the separate recovered view for the 28 found final
+boundaries and verify its shape, provenance, and quality. Preserve the
+unresolved July 28 boundary and all intraday invalid rows; keep the proxy
+`label_source` separate from official label recovery.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.
