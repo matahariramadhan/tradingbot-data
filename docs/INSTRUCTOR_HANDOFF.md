@@ -1,7 +1,7 @@
 # Project-Specific Instructor Handoff
 
 Status: Adapter for the reusable instructor prompt  
-Last verified: 2026-08-14
+Last verified: 2026-08-15
 
 ## Transfer Note — 2026-08-14
 
@@ -107,32 +107,31 @@ The student currently understands the distinction between:
   builds the gap-aware feature view; its July 27 canary produced 284 usable
   rows out of 288 and all 13 local tests passed. The published revision then
   produced the 29-day feature view remotely: 8,316 usable rows out of 8,352,
-  with 36 invalid rows preserved for review. The next task is to classify
-  those flags before joining proxy targets. The first classification found 29
-  `received_after_cutoff` rows and 7 `missing_kline` rows; exact timestamps
-  confirmed one `00:00:00Z` opening-boundary row per eligible day for the
-  former, plus seven isolated intraday gaps for the latter. The next task is
-  the separate proxy-target view. Its July 27 canary now matches the corrected
-  local result: 283 valid targets and 5 missing-boundary windows; all valid
-  targets have late receipts that are permitted for offline label construction.
-  The 29-day batch produced 8,299 valid targets out of 8,352. Timestamp review
-  found 29 final `23:55:00` windows and 11 non-final missing-end windows; the
-  13 missing-start rows are intraday. Check adjacent-day recovery before
-  joining targets to features.
+  with 36 invalid rows preserved for review. Those flags were classified as
+  29 `received_after_cutoff` opening-boundary rows and 7 `missing_kline`
+  intraday rows. The separate proxy-target batch produced 8,299 valid targets
+  out of 8,352; timestamp review found 29 final `23:55:00` windows and 11
+  non-final missing-end windows, while the 13 missing-start rows are
+  intraday. The cross-archive boundary-recovery scan completed all 30 source
+  groups and found 28 of the 29 final boundaries; `2026-07-28` remains
+  unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
+  observations explicitly before any target/feature join.
 - The original Colab notebook has been replaced with a 23-cell pinned Phase 1
   runbook. It verifies existing control artifacts, separates feature and proxy
-  generation, and stops at the unresolved boundary-recovery gate. Local
-  structural validation passed; it has not yet been rerun remotely.
+  generation, and stops at the unresolved boundary-recovery gate. Its
+  boundary scan checkpoints after each source archive, so interruption does
+  not restart completed archive scans. Local structural and resumability smoke
+  tests passed; the boundary cell has now also completed remotely.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
-Run the rewritten notebook through its boundary-recovery cell. Review whether
-the 29 final `23:55:00` target boundaries are recoverable from adjacent raw
-archives, then explicitly choose how to preserve or recover them. Keep all
-invalid rows and the proxy `label_source`; keep official label recovery
-separate from the Binance engineering track.
+After the local `0.4.0` recovery implementation is reviewed, publish it and
+repin Colab. Then use the boundary report to build the separate recovered view
+for the 28 found final boundaries and verify its shape, provenance, and
+quality. Preserve the unresolved July 28 boundary and all intraday invalid
+rows; keep the proxy `label_source` separate from official label recovery.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

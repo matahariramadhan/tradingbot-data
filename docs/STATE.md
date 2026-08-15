@@ -83,9 +83,10 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` and `origin/main` were verified at the
-  grouped-GZIP checkpoint `03abbb745cc7919087b2e56607bb6bdf4d582a23`, and the
-  same pinned revision installed successfully in Colab.
+- Git origin is configured. Local `main` and `origin/main` are currently at
+  `bb6fc368d3c56656a98ef352120df93866cc9d30` (`docs: rewrite Phase 1 Colab
+  runbook`). The notebook pins the installable package at its parent feature
+  revision `8bc95e2333348fcce784d0a497f38c44bd1e3a66` (`0.3.0`).
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -123,13 +124,19 @@ map and report before derived work runs. Exact preflight scope is in
   645 seconds. June 29 is source-incomplete and severely under-covered; other
   high-gap days require gap-aware feature validity. Exact measurements are in
   `docs/evidence/2026-08-14-colab-multi-day-binance-quality.md`.
-- A local package revision `0.3.0` now contains a gap-aware Binance
+- The published package revision `0.3.0` contains a gap-aware Binance
   feature-view builder that emits one row per five-minute decision window and
   applies completion, receipt-time, and consecutive-lookback rules. Its July
   27 local canary produced 284 fully usable rows out of 288 requested windows;
   all 13 local tests passed. Exact scope and measurements are in
-  `docs/evidence/2026-08-14-local-feature-view-canary.md`. This revision is
-  not yet published or installed in Colab.
+  `docs/evidence/2026-08-14-local-feature-view-canary.md`.
+- The working tree now contains an unreleased local package `0.4.0` with a
+  `proxy-recover` command. It consumes the verified boundary report, writes a
+  separate recovered target directory, checkpoints after each day, verifies
+  output checksums, and leaves the original proxy-target CSVs untouched. The
+  local implementation test suite passes. Exact implementation scope is in
+  `docs/evidence/2026-08-15-proxy-boundary-recovery-implementation.md`; it is
+  not yet available in the published Colab revision.
 - The published `0.3.0` package has now run remotely across the first derived
   feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully
   usable and 36 retain invalidity flags. Twenty-eight days were processed and
@@ -152,10 +159,16 @@ map and report before derived work runs. Exact preflight scope is in
   windows, with 13 missing start boundaries, 40 missing end boundaries, and no
   duplicates. Timestamp review found 29 final `23:55:00` windows and 11
   non-final missing-end windows; the 13 missing-start rows are also intraday.
-  The final-window boundaries may be recoverable from adjacent-day archives,
-  so the invalid target count is not final until that source-boundary question
-  is resolved. Exact measurements are in
+  The boundary-recovery scan then found 28 of the 29 final boundaries in the
+  scanned raw collection; only the `2026-07-28` final boundary remains absent.
+  The proxy-target count is not yet regenerated with the recovered provenance.
+  Exact batch measurements are in
   `docs/evidence/2026-08-14-colab-proxy-target-batch.md`.
+- The completed boundary-recovery report is at
+  `/content/drive/MyDrive/tradingbot-data-audit/proxy-boundary-recovery-v1.json`.
+  It searched all 30 source groups, found 28 of 29 requested final boundaries,
+  and left `2026-07-28` unrecoverable from the scanned collection. Exact scope
+  and consequence are in `docs/evidence/2026-08-15-colab-boundary-recovery.md`.
 - The Colab notebook was rewritten into a 23-cell Phase 1 runbook pinned to
   package revision `8bc95e2333348fcce784d0a497f38c44bd1e3a66` (`0.3.0`). It
   verifies control artifacts, runs feature and proxy views separately, and
@@ -163,6 +176,11 @@ map and report before derived work runs. Exact preflight scope is in
   JSON and code-cell validation passed; the notebook was not re-executed
   remotely during the rewrite. Exact scope is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md`.
+- Its boundary-recovery scan checkpoints after each completed raw source
+  archive, so an interrupted Drive scan resumes at archive granularity rather
+  than restarting the full collection. The remote run completed all 30 source
+  groups and published a review report with 28 recoverable boundaries and one
+  unresolved July 28 boundary.
 - Recorder source code is not currently present in this workspace.
 
 The accepted working architecture keeps the large raw archives in remote
@@ -278,12 +296,16 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Classify invalid proxy-target rows as archive-edge effects versus intraday
-   gaps, preserving all rows and `label_source` identity.
-2. Determine which historical Chainlink labels and reference values can be
+1. Publish the reviewed local `0.4.0` recovery implementation, repin the Colab
+   notebook, and apply the 28 recovered boundary observations through its
+   explicit recovery step. Re-verify target shape, provenance, and quality
+   counts.
+2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
+   rows as invalid unless separately verified source evidence is found.
+3. Determine which historical Chainlink labels and reference values can be
    recovered.
-3. Correct or replace the recorder before collecting additional research data.
-4. Define and evaluate the official in-window dataset separately from the
+4. Correct or replace the recorder before collecting additional research data.
+5. Define and evaluate the official in-window dataset separately from the
    proxy dataset.
 
 No model training should begin from the sample archive alone.

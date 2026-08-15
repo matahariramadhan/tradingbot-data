@@ -47,6 +47,17 @@ choices belong in their subject-specific document and are indexed by
 - Never rewrite historical evidence to match a newer conclusion. Add a new
   evidence record and update the current state instead.
 
+## Stateless Remote Runtime Rule
+
+Treat Google Colab as a disposable, stateless runtime. Git is the durable code
+store and Google Drive is the durable data, checkpoint, manifest, output, and
+report store. A fresh runtime must be able to rerun the notebook's bootstrap
+cells and reconstruct its context; downstream cells must fail clearly when
+their prerequisites have not been run. No cell may depend on in-memory
+progress surviving a runtime interruption. Long-running cells must checkpoint
+at a meaningful work-unit boundary and skip previously verified units when
+rerun. Follow the detailed contract in `docs/COLAB_RUNBOOK.md`.
+
 ## End-of-Work Update
 
 After material work:

@@ -99,6 +99,7 @@ class ArchiveWorkflowTests(unittest.TestCase):
             "inspect_binance_klines.py",
             "build_decision_snapshot.py",
             "build_binance_proxy_targets.py",
+            "apply_proxy_boundary_recovery.py",
             "build_binance_feature_view.py",
         ):
             completed = subprocess.run(

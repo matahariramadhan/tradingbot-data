@@ -6,6 +6,49 @@ the package; Google Drive stores raw archives, manifests, coverage maps, and
 derived outputs. The repository must contain code and runbook documentation,
 not raw data.
 
+## Stateless Colab contract
+
+Colab is a disposable compute session. A runtime restart may erase all Python
+variables, local files under `/content`, execution counts, and displayed cell
+outputs. The notebook must therefore treat them as caches, never as the source
+of truth.
+
+Durable ownership is split as follows:
+
+| Information | Durable location |
+| --- | --- |
+| Source code and package revision | Git repository |
+| Raw archives | Google Drive raw-data directory |
+| Manifest and coverage map | Google Drive control directory |
+| Audit outputs and checksums | Google Drive audit directory |
+| Derived feature/proxy outputs | Google Drive derived-view directories |
+| Batch checkpoints and review reports | Google Drive control directory |
+
+The notebook is an ordered runbook. After a fresh runtime, rerun its bootstrap
+and control-gate cells in order before running a downstream cell. A downstream
+cell may require those explicit prerequisites, but it must fail clearly when
+they are missing rather than silently using stale or guessed state.
+
+Every notebook cell must be safe under these conditions once its documented
+prerequisites are present:
+
+- A fresh runtime has no prior in-memory variables.
+- A cell is rerun after an interruption.
+- A long scan stops halfway through one work unit.
+- An output already exists from a verified earlier run.
+
+Long-running cells must checkpoint after each meaningful work unit, such as one
+archive or one UTC day. On rerun they must reload the checkpoint or inspect
+verified per-unit outputs, skip completed verified units, and repeat at most
+the unit that was interrupted. A final output is published only after the unit
+completes and its shape or checksum is verified. Temporary files must not be
+mistaken for completed outputs.
+
+Short summary cells may rerun from persisted outputs without checkpoints. They
+must still reload their input files instead of relying on variables created by
+earlier cells. If required durable state is missing, the cell must stop with a
+clear message rather than silently rebuilding or guessing it.
+
 ## 1. Clone a pinned revision
 
 Use the repository URL and a reviewed commit or tag supplied by the project
@@ -22,8 +65,26 @@ owner. The current feature/proxy runbook is pinned to
 
 After setup, execute `tradingbot_data.ipynb` from top to bottom. It verifies
 the existing manifest, coverage map, and checksum-bearing audit outputs before
-running the derived feature and proxy views. It stops at the adjacent-boundary
+running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
+
+The currently published notebook/package revision predates the boundary
+recovery command. Do not run recovery from an unpinned working tree. After the
+reviewed `0.4.0` package revision is published and the notebook is repinned,
+run:
+
+```python
+!tradingbot-data proxy-recover \
+  --input-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-targets" \
+  --output-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-targets-recovered-v1" \
+  --boundary-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-boundary-recovery-v1.json" \
+  --output-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-target-recovery-v1.json"
+```
+
+It checkpoints one UTC-day CSV at a time, skips verified recovered outputs on
+rerun, and leaves the original `proxy-targets` directory unchanged. A
+successful report must show all uniquely sourced recoveries used and no unused
+recoverable boundaries before the recovered view is eligible for a later join.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.

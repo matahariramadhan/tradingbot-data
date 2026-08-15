@@ -1,7 +1,7 @@
 # Data Quality Policy
 
 Status: Accepted initial policy  
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 Scope: First BTC feature pipeline
 
 ## Rules
@@ -60,6 +60,20 @@ Scope: First BTC feature pipeline
    `t`. It does not invalidate a historical target merely because a boundary
    value used only to construct that target arrived after `t`. A late target
    boundary must never be included in the feature row for that decision.
+16. For the first feature/proxy dataset view of this collection, exclude
+    candidate group `2026-06-29` because it is source-incomplete and severely
+    under-covered. Preserve its raw inputs and audit outputs; this exclusion
+    applies only to the first downstream dataset view.
+17. Do not exclude the other days solely because the aggregate audit reports
+    gaps. Preserve their rows and apply feature-specific consecutive-kline and
+    receipt-time validity rules at row construction time. A whole-day
+    exclusion requires a separate accepted decision based on the resulting
+    feature-quality report.
+18. A uniquely sourced boundary from a verified cross-archive recovery report
+    may repair a missing Binance proxy-target boundary only in a separate
+    recovered target view. Keep the original target view unchanged, preserve
+    the recovered boundary's interval and receipt provenance, and leave
+    ambiguous or unrecoverable boundaries invalid.
 
 ## Initial Output Fields
 

@@ -43,3 +43,18 @@ The notebook itself was not executed against Drive during this local rewrite;
 the previously measured remote results remain the evidence for the audit,
 feature, and proxy outputs. The adjacent-boundary recovery scan remains the
 next remote checkpoint.
+
+## Post-rewrite correction
+
+The first remote execution exposed an assertion mismatch in the control-gate
+cell. The manifest's top-level `input_layout` is the CLI value
+`grouped-gzip`; its individual records use `direct_gzip_group`. The notebook
+assertion was corrected to check both levels, and all code-cell validation was
+rerun successfully.
+
+The first boundary-recovery implementation was also replaced with an
+archive-level resumable scan. It checkpoints completed source groups after
+each archive and resumes from the checkpoint after interruption; the current
+archive may be repeated, but completed archives are skipped. When the complete
+scan finishes, it publishes a review report even if some requested boundaries
+remain unrecoverable; an interrupted scan publishes only its checkpoint.

@@ -92,6 +92,20 @@ Evidence and safety:
 - Do not take external, destructive, or materially consequential actions beyond
   the student's request and the project's established scope.
 
+Stateless remote-runtime protocol:
+- Treat Google Colab and similar hosted runtimes as disposable. Never treat
+  notebook memory, execution counts, or rendered outputs as durable state.
+- Keep code and package versions in Git; keep raw data, manifests, checkpoints,
+  verified outputs, and reports in durable project storage such as Google
+  Drive.
+- Design every long-running cell to checkpoint at a meaningful work-unit
+  boundary, reload its checkpoint on rerun, and skip previously verified units.
+- Use temporary output paths and publish a final output only after the unit has
+  completed and its shape or checksum has been verified.
+- Make short read-only summaries safely rerunnable from persisted artifacts.
+- Explain this contract before asking the student to run a potentially long
+  remote cell.
+
 When the project context is incomplete:
 - State what is known, unknown, and assumed.
 - Ask only for the smallest missing information needed to proceed.

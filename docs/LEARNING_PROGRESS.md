@@ -284,3 +284,25 @@ UTC coverage. This is decision D-026.
 Install the grouped-GZIP workflow at a pinned revision in Colab, build and
 inspect its manifest, verify one group's UTC coverage from event timestamps,
 and run that group before starting the full resumable audit.
+
+## Lesson 6 — Multi-Day Data Quality Gate
+
+### Completed checkpoint
+
+The learner completed the full remote data-foundation run: all 30 Binance audit
+outputs were persisted and checksum-verified, and the aggregate report found
+zero malformed JSON, zero duplicate starts, and zero backward starts. The
+collection has 89,677 missing one-second starts across 55 gap events, with a
+largest gap of 645 seconds. One group, 2026-06-29, is both source-incomplete
+and severely under-covered.
+
+The learner accepted the first downstream inclusion policy: exclude 2026-06-29
+from the initial feature/proxy view while preserving its raw and audit rows;
+retain other days and determine row validity from each feature's gap and
+receipt-time dependencies rather than deleting whole days automatically.
+
+### Next checkpoint
+
+Construct the gap-aware Binance feature/proxy view and measure how many rows
+remain valid after the 60-second lookback and receipt-time rules. Keep official
+Chainlink labels and Polymarket source completeness as a separate research gate.

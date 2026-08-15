@@ -1,7 +1,7 @@
 # Decision Log
 
 Status: Authoritative chronological index  
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 
 This file records that durable decisions were accepted and points to their
 canonical definitions. It does not restate those definitions.
@@ -34,6 +34,9 @@ canonical definitions. It does not restate those definitions.
 | D-024 | 2026-08-14 | Require an explicit UTC coverage start for each archive audit; never infer the recording day from an archive upload filename | `docs/STATE.md` under **Archive Processing Contract** |
 | D-025 | 2026-08-14 | Distribute the data-foundation workflow as an installable GitHub package for Colab, while keeping raw data and audit outputs in Google Drive | `docs/COLAB_RUNBOOK.md` |
 | D-026 | 2026-08-14 | Supersede D-022's physical-archive interpretation: treat one candidate-date raw GZIP group as the resumable unit, hash each source member, exclude derived CSVs from raw identity, retain missing roles explicitly, and verify UTC coverage independently | `docs/STATE.md` under **Archive Processing Contract** |
+| D-027 | 2026-08-14 | Exclude source-incomplete, severely under-covered 2026-06-29 from the first feature/proxy view while preserving its raw/audit evidence; retain other days for row-level gap-aware validity rather than excluding whole days from aggregate gap counts alone | `docs/DATA_QUALITY_POLICY.md` rules 16-17 |
+| D-028 | 2026-08-15 | Treat Google Colab as stateless: keep code in Git and data, checkpoints, manifests, verified outputs, and reports in Google Drive; require every long-running notebook cell to resume from persisted work-unit checkpoints and skip verified completed units | `docs/COLAB_RUNBOOK.md` under **Stateless Colab contract** |
+| D-029 | 2026-08-15 | Apply uniquely sourced cross-archive boundary recoveries only into a separate verified proxy-target view; preserve the original target view and keep ambiguous or unrecoverable boundaries invalid | `docs/DATA_QUALITY_POLICY.md` rule 18 |
 
 New entries are append-only. If a decision is superseded, append a new entry and
 link both entries to the new canonical definition; do not rewrite the old row.
