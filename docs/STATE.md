@@ -83,9 +83,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` and `origin/main` include the
-  version-aware stale-checkpoint fix at `4200413`; the notebook is being
-  repinned to package `0.5.2` at that commit.
+- Git origin is configured. Local `main` includes the proxy quality-review
+  implementation; its code commit is `f2bcd78` and the notebook is being
+  repinned to package `0.6.0` at that commit.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -182,21 +182,21 @@ map and report before derived work runs. Exact preflight scope is in
   8,327 valid rows and 25 invalid rows out of 8,352; the original target view
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
-- The Colab notebook is now a 29-cell Phase 1 runbook being repinned to package
-  commit `420041347f78215cf71b9f8d76852968eb6374fd` (`0.5.2`). It verifies control
+- The Colab notebook is now a 31-cell Phase 1 runbook being repinned to package
+  commit `f2bcd784f3a54331069f088d5d182a407c51f7bf` (`0.6.0`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, and stops before any model-ready
-  join. Its recovery and quality-verification cells have now run remotely; the
-  model-ready join cell has not yet run remotely. Exact rewrite history is in
+  join and quality-review cells have not yet run remotely. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.5.2` implementation now provides the next join-integrity
+- The package `0.6.0` implementation now provides the next proxy dataset-quality
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
   model features, canonicalizes equivalent UTC timestamp text before matching,
-  and invalidates stale checkpoints when the implementation changes. Its
-  19-test local suite passes; the repinned notebook has not yet rerun the join
+  invalidates stale checkpoints when the implementation changes, and reviews
+  label balance, finite numeric features, chronology, and exclusions. Its
+  21-test local suite passes; the repinned notebook has not yet run the review
   in Colab. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - The corrected proxy join has now run remotely. It produced 8,352 audit rows

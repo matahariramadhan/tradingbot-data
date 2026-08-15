@@ -116,13 +116,14 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
   observations explicitly before any target/feature join.
-- The Colab notebook is now a 29-cell Phase 1 runbook being repinned to package
-  `420041347f78215cf71b9f8d76852968eb6374fd` (`0.5.2`). It verifies existing
+- The Colab notebook is now a 31-cell Phase 1 runbook being repinned to package
+  `f2bcd784f3a54331069f088d5d182a407c51f7bf` (`0.6.0`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
-  recovery into a separate target view, and adds a resumable model-ready join.
+  recovery into a separate target view, adds a resumable model-ready join, and
+  adds a proxy model-view quality review.
   Its boundary scan checkpoints after each source archive, so interruption does
   not restart completed archive scans. Local structural and resumability tests
-  passed; the join step has not yet run remotely.
+  passed; the join and review steps have not yet run remotely.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
@@ -146,10 +147,9 @@ split.
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
-three initial feature columns. It is package `0.5.2` at commit
-`420041347f78215cf71b9f8d76852968eb6374fd`, has passed 19 local tests, and the
-join is ready for its remote rerun. The implementation-version checkpoint
-control will rebuild the stale outputs from the earlier failed run.
+three initial feature columns. It is package `0.6.0` at commit
+`f2bcd784f3a54331069f088d5d182a407c51f7bf`, has passed 21 local tests, and the
+quality review is ready for its remote run.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.
