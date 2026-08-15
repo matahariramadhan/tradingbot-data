@@ -130,10 +130,11 @@ The report records per-day row counts and source hashes and verifies that all
 training keys precede evaluation keys, with zero train/evaluation key overlap.
 It does not copy rows or train a model.
 
-Feature CSV reuse is controlled by the feature implementation identity, not the
-global package version. A package-only change for split/report work therefore
-reuses compatible feature outputs; a feature algorithm or policy change must
-publish a new feature identity and regenerate them.
+Feature CSV reuse is controlled by the feature implementation identity and each
+day's raw-source SHA-256, not the global package version. A package-only change
+for split/report work therefore reuses compatible feature outputs; a changed
+raw archive rebuilds only that day; a feature algorithm or policy change must
+publish a new feature identity and regenerate affected outputs.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.
