@@ -25,7 +25,11 @@ from archive_manifest import (  # noqa: E402
 )
 from audit_binance_klines import audit  # noqa: E402
 from build_archive_manifest import build_grouped_gzip_records  # noqa: E402
-from build_binance_feature_view import build_feature_view  # noqa: E402
+from build_binance_feature_view import (  # noqa: E402
+    FEATURE_VIEW_IMPLEMENTATION_VERSION,
+    build_feature_view,
+    feature_report_is_compatible,
+)
 from run_archive_audit import run_one, verify_completed_output  # noqa: E402
 from run_archive_batch import coverage_for, load_coverage_map  # noqa: E402
 
@@ -220,6 +224,33 @@ class ArchiveWorkflowTests(unittest.TestCase):
             self.assertEqual(rows[1]["feature_row_usable"], "true")
             self.assertEqual(rows[1]["return_1m_valid"], "true")
             self.assertEqual(rows[1]["volatility_1m_valid"], "true")
+
+    def test_feature_report_reuse_is_stage_specific(self) -> None:
+        self.assertTrue(
+            feature_report_is_compatible(
+                {
+                    "feature_view_implementation_version": FEATURE_VIEW_IMPLEMENTATION_VERSION,
+                    "package_revision": "unrelated-future-package-commit",
+                    "package_version": "9.9.9",
+                }
+            )
+        )
+        self.assertTrue(
+            feature_report_is_compatible(
+                {
+                    "package_revision": "a3e038a648ed8d182377147eddd64742bfc50495",
+                    "package_version": "0.6.1",
+                }
+            )
+        )
+        self.assertFalse(
+            feature_report_is_compatible(
+                {
+                    "package_revision": "unrelated-old-commit",
+                    "package_version": "0.6.0",
+                }
+            )
+        )
 
     def test_feature_view_rejects_missing_lookback_inputs(self) -> None:
         decision = datetime(2026, 6, 29, 0, 5, tzinfo=timezone.utc)

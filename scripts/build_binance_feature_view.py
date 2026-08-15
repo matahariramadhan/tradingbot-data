@@ -40,6 +40,24 @@ FIELDNAMES = [
     "feature_quality_flag",
 ]
 
+# This identity changes only when feature semantics or their validity policy
+# changes. It must not change for unrelated package commands.
+FEATURE_VIEW_IMPLEMENTATION_VERSION = "feature-view-2026-08-15-net-return-v1"
+LEGACY_FEATURE_OUTPUT_IDENTITIES = {
+    ("a3e038a648ed8d182377147eddd64742bfc50495", "0.6.1"),
+}
+
+
+def feature_report_is_compatible(report: dict[str, Any]) -> bool:
+    if report.get("feature_view_implementation_version") == (
+        FEATURE_VIEW_IMPLEMENTATION_VERSION
+    ):
+        return True
+    return (
+        report.get("package_revision"),
+        report.get("package_version"),
+    ) in LEGACY_FEATURE_OUTPUT_IDENTITIES
+
 
 def parse_utc(value: str) -> datetime:
     parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
