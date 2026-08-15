@@ -116,26 +116,28 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. Those 28 observations have now
   been applied in the separate recovered target view.
-- The Colab notebook is now a 35-cell Phase 1 runbook pinned to package
-  `8aadeee328da5361736a3a09071331d761259091` (`0.8.0`). It verifies existing
+- The Colab notebook is now a 41-cell Phase 1 runbook pinned to package
+  `63cbd647953d203abab23ccd5d27c9a87aec3d4a` (`0.8.1`). It verifies existing
   control artifacts, reuses stage-compatible feature outputs, applies boundary
   recovery, joins and reviews the proxy model view, validates the chronological
-  split, and runs the first proxy baseline. Its bootstrap verifies both the
-  installed distribution version and module version before derived work runs.
+  split, runs the first proxy baseline, and renders three human checkpoints for
+  the data, split, and evaluation. Its bootstrap verifies the installed
+  distribution, module, and visualization environment before derived work runs.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
-Run the pinned notebook through the `proxy-baseline` cell. The accepted split
-already contains 6,586 earlier training rows and 1,706 later evaluation rows
-with zero key overlap. The command must persist and checksum the fitted model,
-evaluation predictions, and metrics report in Drive.
+Run the three human visualization checkpoints. The first proxy baseline is
+complete and its Drive artifacts verify. It was
+correct on 854 of 1,706 later evaluation rows, versus 845 for the
+training-majority baseline; ROC-AUC was 0.487225 and probability losses were
+essentially coin-flip level.
 
-After the run, compare the logistic-regression metrics with the majority-class
-baseline before changing features or model families. This is a Binance-proxy
-engineering experiment only; do not present it as an official Polymarket result
-or as evidence of trading profitability.
+Explain the metrics and ask whether the result justifies a second
+hypothesis-driven experiment. Do not repeatedly tune against the same six
+evaluation days or present this Binance-proxy result as an official Polymarket
+result or evidence of trading profitability.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

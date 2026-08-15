@@ -7,11 +7,11 @@ This file describes the present, not project history or detailed evidence.
 
 ## Current Position
 
-The project has completed the Binance proxy data-foundation and chronological
-split gates. The first proxy-baseline training command is implemented, but its
-remote training run has not yet produced a verified model report. No official
-research dataset, backtest, or trading system has been implemented in this
-workspace.
+The project has completed the Binance proxy data-foundation, chronological
+split, and first proxy-baseline gates. The verified baseline artifacts now
+exist in Drive; their later-period evaluation is approximately chance-level and
+does not demonstrate useful predictive signal. No official research dataset,
+backtest, or trading system has been implemented in this workspace.
 
 `instruction.md` is the immutable project charter. The teaching approach is
 defined separately in `docs/LEARNING_CONTRACT.md`.
@@ -85,9 +85,10 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Package version `0.8.0` is pinned for Colab at
-  `8aadeee328da5361736a3a09071331d761259091`; its distribution metadata and
-  module version are verified equal.
+- Git origin is configured. Package version `0.8.1` is pinned for Colab at
+  `63cbd647953d203abab23ccd5d27c9a87aec3d4a`; its distribution metadata and
+  module version are verified equal, and its training extra reconstructs the
+  visualization environment.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -183,12 +184,14 @@ map and report before derived work runs. Exact preflight scope is in
   8,327 valid rows and 25 invalid rows out of 8,352; the original target view
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
-- The Colab notebook is now a 35-cell Phase 1 runbook pinned to package
-  commit `8aadeee328da5361736a3a09071331d761259091` (`0.8.0`). It verifies control
+- The Colab notebook is now a 41-cell Phase 1 runbook pinned to package
+  commit `63cbd647953d203abab23ccd5d27c9a87aec3d4a` (`0.8.1`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
   proxy model-view quality review, chronological proxy split report, and the
-  first proxy baseline. Exact rewrite history is in
+  first proxy baseline. It also reloads durable artifacts into human-readable
+  dataset, split, and baseline visualizations without repeating raw scans or
+  model training. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
 - The package `0.7.2` implementation now provides the proxy dataset-quality
@@ -242,13 +245,22 @@ map and report before derived work runs. Exact preflight scope is in
   features, evaluates on the later days once, and writes a joblib model,
   evaluation predictions, and checksum-bearing metrics report to Drive. It
   skips only when those outputs remain verified against the same split. The
-  remote training run is the next gate; its design is intentionally a proxy
-  engineering baseline, not a final Polymarket result.
+  remote run produced and later reused verified artifacts. Evaluation accuracy
+  was 0.500586 versus 0.495311 for the training-majority baseline, while ROC-AUC
+  was 0.487225 and probability losses were essentially coin-flip level. Exact
+  measurements are in
+  `docs/evidence/2026-08-15-colab-proxy-baseline-run.md`. This is intentionally
+  a proxy engineering baseline, not a final Polymarket result.
 - Package commit `8aadeee328da5361736a3a09071331d761259091`
   corrects the distribution metadata to `0.8.0` and adds a regression test
   requiring it to match the module version. The pinned notebook verifies both
   identities before derived work runs. Exact local evidence is in
   `docs/evidence/2026-08-15-package-version-metadata-fix.md`.
+- Package `0.8.1` at `63cbd647953d203abab23ccd5d27c9a87aec3d4a`
+  adds the pinned visualization dependency. The baseline implementation
+  identity remains `0.8.0`, so verified baseline artifacts remain reusable.
+  The notebook visualization design and local validation are recorded in
+  `docs/evidence/2026-08-15-human-readable-colab-notebook.md`.
 - Package `0.7.2` now separates feature-output provenance from global package
   versioning. The next notebook run can reuse the verified corrected feature
   CSVs when only split/report code changed; only a feature implementation or
@@ -380,11 +392,11 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the pinned `0.8.0` notebook's proxy-baseline cell and verify the
-   checksum-bearing model, prediction CSV, and metrics report. Compare its
-   evaluation metrics with the majority baseline before changing features or
-   model families. Keep this proxy baseline separate from final official
-   Polymarket claims.
+1. Run the three human visualization checkpoints in pinned package `0.8.1`,
+   then interpret the chance-level proxy baseline and decide whether a second
+   hypothesis-driven experiment is justified. Do not repeatedly tune against
+   the same six evaluation days as though they remain an untouched test set.
+   Keep this proxy result separate from final official Polymarket claims.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

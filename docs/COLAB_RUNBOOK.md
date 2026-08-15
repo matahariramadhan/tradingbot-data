@@ -52,7 +52,7 @@ clear message rather than silently rebuilding or guessing it.
 ## 1. Clone a pinned revision
 
 Use the repository URL and the reviewed baseline-training commit
-`8aadeee328da5361736a3a09071331d761259091`:
+`63cbd647953d203abab23ccd5d27c9a87aec3d4a`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The quality-review-capable package revision is `0.8.0`. Do not run recovery,
+The human-readable baseline package revision is `0.8.1`. Do not run recovery,
 joining, or review from an unpinned working tree. After commit
-`8aadeee328da5361736a3a09071331d761259091` is available from the repository,
+`63cbd647953d203abab23ccd5d27c9a87aec3d4a` is available from the repository,
 run:
 
 ```python
@@ -148,6 +148,12 @@ joblib model, evaluation predictions, and a checksum-bearing JSON report. On a
 rerun, it skips only when those outputs still match the same split report.
 This is a Binance-proxy engineering result and must not be presented as the
 final Polymarket research result.
+
+The notebook then reloads the verified Drive artifacts into three human
+checkpoints: a model-view data overview, a chronological split timeline, and a
+baseline dashboard covering metrics, probability errors, the confusion matrix,
+calibration, probability separation, and standardized coefficients. These
+summary cells do not retrain the model or rescan raw data.
 
 Feature CSV reuse is controlled by the feature implementation identity and each
 day's raw-source SHA-256, not the global package version. A package-only change

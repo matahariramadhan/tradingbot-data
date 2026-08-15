@@ -112,7 +112,10 @@ The project now contains:
 - atomic writes, output checksums, stale-run recovery, and focused unit tests.
 - a `proxy-baseline` command that fits a standardized logistic regression on
   training rows only and persists its model, evaluation predictions, and
-  checksum-bearing metrics report.
+  checksum-bearing metrics report;
+- human-readable notebook checkpoints for model-view health, chronological
+  separation, classification errors, calibration, probability separation, and
+  standardized coefficients.
 
 The local end-to-end reproduction completed the legacy sample, verified its
 output, and safely skipped it on a subsequent run. Exact measurements are in the
@@ -130,9 +133,9 @@ matching checksum.
 ## Current Phase Status
 
 Phase 1 is not complete. The 30-group Binance audit, proxy engineering view,
-and chronological split gates are complete; the first proxy baseline is
-implemented but has not yet been run remotely. The official research-readiness
-gate still requires:
+chronological split, and first proxy-baseline gates are complete. The baseline
+evaluation was approximately chance-level and does not demonstrate useful
+predictive signal. The official research-readiness gate still requires:
 
 - recorder source-code review or an intentional replacement;
 - recovery and verification of official Chainlink values and Polymarket
@@ -140,27 +143,20 @@ gate still requires:
 - the synchronized, documented official research dataset and Phase 1
   visualizations.
 
-The next training run is explicitly proxy engineering only. It must be
-compared with a majority-class baseline and must not be presented as the final
-Polymarket result. Official-target training, backtesting, paper trading, and
-live trading remain deferred.
+The completed training run is explicitly proxy engineering only. It must not
+be presented as the final Polymarket result. Official-target training,
+backtesting, paper trading, and live trading remain deferred.
 
 ## Recommended Next Lesson
 
-Run the latest pinned notebook from package `0.8.0`, commit
-`8aadeee328da5361736a3a09071331d761259091`, through the proxy-baseline cell.
-The notebook should reuse the verified feature outputs, install the optional
-training dependencies, and write these Drive artifacts under
-`proxy-baseline-v1/`:
-
-- `proxy-baseline-v1.json` — model parameters, metrics, provenance, and hashes;
-- `proxy-baseline-v1.joblib` — the fitted pipeline;
-- `proxy-baseline-evaluation-v1.csv` — one prediction per evaluation row.
-
-The teaching checkpoint after the run is to compare the logistic-regression
-evaluation metrics with the majority baseline. Ask only the meaningful next
-questions: what the evaluation result measures, and whether it justifies a
-second experiment. Do not tune the model or claim trading performance yet.
+Run the human checkpoint cells from package `0.8.1`, commit
+`63cbd647953d203abab23ccd5d27c9a87aec3d4a`, then teach the completed baseline
+result: 854 of 1,706 evaluation rows were correct,
+only nine more than the training-majority baseline; ROC-AUC was 0.487225 and
+the probability losses were essentially coin-flip level. Ask only the
+meaningful next questions: what the evaluation result measures, and whether it
+justifies a second hypothesis-driven experiment. Do not tune against the same
+evaluation period repeatedly or claim trading performance.
 
 ## Resume Instructions
 

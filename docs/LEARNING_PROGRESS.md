@@ -352,3 +352,28 @@ were partitioned into 6,586 training rows and 1,706 evaluation rows, with zero
 overlap in `window_start_utc` keys. The learner is ready for the first simple
 proxy baseline. The training gate will compare that model with a majority-class
 baseline before any feature tuning or more complex model is considered.
+
+## Lesson 9 — First Proxy Baseline
+
+### Experiment completed
+
+The standardized three-feature logistic regression completed remotely and its
+checksum-bearing Drive artifacts were verified. A subsequent notebook run
+safely reused those artifacts instead of retraining. On 1,706 later evaluation
+rows, the model was correct on 854 rows versus 845 for the training-majority
+baseline. Its ROC-AUC was below 0.5 and its log loss and Brier score remained
+essentially at coin-flip levels. Exact measurements are in
+`docs/evidence/2026-08-15-colab-proxy-baseline-run.md`.
+
+### Next teaching checkpoint
+
+The notebook now follows its machine gates with three human views: model-ready
+data health and feature distributions, the chronological split timeline, and a
+baseline dashboard covering metrics, errors, calibration, probability
+separation, and coefficients. These cells reload durable Drive artifacts and
+do not repeat raw processing or training.
+
+Interpret what each evaluation plot and confusion-matrix cell measures, then
+decide whether this result supports a second hypothesis-driven experiment. Do
+not treat a nine-row improvement as evidence of trading edge, and do not reuse
+the same evaluation period indefinitely while still calling it untouched.
