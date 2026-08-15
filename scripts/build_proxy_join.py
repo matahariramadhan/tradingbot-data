@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -92,19 +93,35 @@ def load_rows(path: Path, fieldnames: list[str]) -> list[dict[str, str]]:
         return list(reader)
 
 
+def canonical_window_key(value: str) -> str:
+    """Normalize equivalent UTC timestamp text to one join representation."""
+
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError(f"join key must include a timezone: {value}")
+    return (
+        parsed.astimezone(timezone.utc)
+        .isoformat(timespec="milliseconds")
+        .replace("+00:00", "Z")
+    )
+
+
 def index_unique_rows(
     rows: list[dict[str, str]], path: Path
 ) -> dict[str, dict[str, str]]:
     indexed: dict[str, dict[str, str]] = {}
     duplicates: list[str] = []
     for row in rows:
-        key = row.get(KEY_FIELD, "")
-        if not key:
+        raw_key = row.get(KEY_FIELD, "")
+        if not raw_key:
             raise ValueError(f"{path.name} contains a blank {KEY_FIELD}")
+        key = canonical_window_key(raw_key)
         if key in indexed:
             duplicates.append(key)
         else:
-            indexed[key] = row
+            normalized = dict(row)
+            normalized[KEY_FIELD] = key
+            indexed[key] = normalized
     if duplicates:
         unique_duplicates = sorted(set(duplicates))
         raise DuplicateKeyError(

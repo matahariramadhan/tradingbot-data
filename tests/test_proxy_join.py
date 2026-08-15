@@ -78,19 +78,26 @@ class ProxyJoinTests(unittest.TestCase):
             root = Path(directory)
             (root / "features").mkdir()
             (root / "targets").mkdir()
-            keys = [
+            target_keys = [
                 "2026-07-27T00:00:00.000Z",
                 "2026-07-27T00:05:00.000Z",
+            ]
+            feature_keys = [
+                "2026-07-27T00:00:00.000000Z",
+                "2026-07-27T00:05:00.000000Z",
             ]
             write_rows(
                 root / "features" / "2026-07-27.csv",
                 FEATURE_FIELDNAMES,
-                [feature_row(keys[0], "true"), feature_row(keys[1], "false")],
+                [
+                    feature_row(feature_keys[0], "true"),
+                    feature_row(feature_keys[1], "false"),
+                ],
             )
             write_rows(
                 root / "targets" / "2026-07-27.csv",
                 TARGET_FIELDNAMES,
-                [target_row(keys[0]), target_row(keys[1])],
+                [target_row(target_keys[0]), target_row(target_keys[1])],
             )
 
             first = subprocess.run(
