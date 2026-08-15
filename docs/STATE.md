@@ -83,9 +83,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes the recovery fix and repinned
-  notebook; `origin/main` remains at `585709a` until the user pushes. The
-  notebook pins package `0.4.1` at commit
+- Git origin is configured. Local `main` and `origin/main` now include the
+  recovery fix and repinned notebook at `8a802eb`. The notebook pins package
+  `0.4.1` at commit
   `41fdff5619d4c00389628eb526f9f66ac19f3650`.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
@@ -141,9 +141,9 @@ map and report before derived work runs. Exact preflight scope is in
   valid boundary. The proxy builder now preserves partial boundaries, and
   recovery can repair legacy final-window rows only from an exact adjacent
   boundary. Package version `0.4.1` is committed at
-  `41fdff5619d4c00389628eb526f9f66ac19f3650`; the repinned notebook is ready
-  but the commits have not yet been pushed or rerun remotely. Exact diagnosis
-  and validation are in
+  `41fdff5619d4c00389628eb526f9f66ac19f3650`; the commits are pushed, but the
+  recovery has not yet been rerun remotely. Exact diagnosis and validation are
+  in
   `docs/evidence/2026-08-15-proxy-recovery-legacy-row-fix.md`.
 - The published `0.3.0` package has now run remotely across the first derived
   feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully

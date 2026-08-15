@@ -11,5 +11,5 @@ notebook still uses the existing Drive boundary report and recovery checkpoint;
 no raw archive rescan is required. The original proxy-target directory remains
 read-only, and recovery continues to write a separate recovered view.
 
-The commit has been created locally and is ready to push. The remote rerun has
-not yet occurred, so no recovered target count is claimed here.
+The commits are pushed to `origin/main`. The remote rerun has not yet occurred,
+so no recovered target count is claimed here.

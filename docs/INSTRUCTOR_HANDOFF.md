@@ -128,9 +128,9 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-Push commit
-`41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`), then
-run the repinned notebook and rerun the failed recovery cell. Review the
+The fix is pushed in commit
+`41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`). Run
+the repinned notebook and rerun the failed recovery cell. Review the
 separate recovered view for the 28 found final boundaries and verify its shape,
 provenance, and quality. Preserve the unresolved July 28 boundary and all
 intraday invalid rows; keep the proxy `label_source` separate from official
