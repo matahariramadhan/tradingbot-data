@@ -105,27 +105,34 @@ The student currently understands the distinction between:
   checksums. The aggregate report found 89,677 missing starts across 55 gaps,
   with a largest gap of 645 seconds. A local package revision `0.3.0` now
   builds the gap-aware feature view; its July 27 canary produced 284 usable
-  rows out of 288 and all 13 local tests passed. The revision is not yet
-  published to Colab; the remaining remote task is the 29-group feature run.
+  rows out of 288 and all 13 local tests passed. The published revision then
+  produced the 29-day feature view remotely: 8,316 usable rows out of 8,352,
+  with 36 invalid rows preserved for review. The next task is to classify
+  those flags before joining proxy targets. The first classification found 29
+  `received_after_cutoff` rows and 7 `missing_kline` rows; exact timestamps
+  confirmed one `00:00:00Z` opening-boundary row per eligible day for the
+  former, plus seven isolated intraday gaps for the latter. The next task is
+  the separate proxy-target view. Its July 27 canary now matches the corrected
+  local result: 283 valid targets and 5 missing-boundary windows; all valid
+  targets have late receipts that are permitted for offline label construction.
+  The 29-day batch produced 8,299 valid targets out of 8,352. Timestamp review
+  found 29 final `23:55:00` windows and 11 non-final missing-end windows; the
+  13 missing-start rows are intraday. Check adjacent-day recovery before
+  joining targets to features.
+- The original Colab notebook has been replaced with a 23-cell pinned Phase 1
+  runbook. It verifies existing control artifacts, separates feature and proxy
+  generation, and stops at the unresolved boundary-recovery gate. Local
+  structural validation passed; it has not yet been rerun remotely.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
-Make the remote grouped-GZIP work reproducible:
-
-1. Publish the tested local package revision `0.3.0` and install that exact
-   revision in Colab; the currently pinned remote version is `0.2.0`.
-2. Treat the inspected 30-record Drive manifest as the control record: it has
-   89 raw members, one incomplete group, 10 ignored derived files, and all
-   records initially `pending`.
-3. July 27 has now passed the persistent Drive audit: its output exists and its
-   checksum matches the manifest.
-4. Apply the accepted policy: exclude June 29 from the first feature/proxy view
-   while preserving raw/audit rows; retain other days for row-level validity.
-5. Build the gap-aware Binance feature view remotely for the 29 eligible
-   groups and measure valid rows.
-6. Keep official label recovery separate from the Binance engineering track.
+Run the rewritten notebook through its boundary-recovery cell. Review whether
+the 29 final `23:55:00` target boundaries are recoverable from adjacent raw
+archives, then explicitly choose how to preserve or recover them. Keep all
+invalid rows and the proxy `label_source`; keep official label recovery
+separate from the Binance engineering track.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

@@ -1,7 +1,7 @@
 # Current Project State
 
 Status: Authoritative current-state handoff  
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 
 This file describes the present, not project history or detailed evidence.
 
@@ -74,13 +74,12 @@ The workflow is installable as package `tradingbot-data` through
 batch, proxy-target, snapshot, inspection, and day-audit workflows. The Colab
 execution contract is documented in `docs/COLAB_RUNBOOK.md`.
 
-The shared `tradingbot_data.ipynb` now contains a streaming coverage preflight
-cell. It scans internal Binance receipt timestamps, writes a review report, and
-refuses to write a coverage map if any group is missing, malformed, or spans a
-different UTC date than its candidate group. The full Drive collection has now
-passed this preflight: all 30 groups were verified and zero groups were sent to
-review. The map and report are stored in the project control directory on
-Drive. Exact scope is in `docs/evidence/2026-08-14-colab-coverage-map.md`.
+The earlier coverage preflight scanned internal Binance receipt timestamps,
+wrote a review report, and produced the current coverage map only after all 30
+groups passed. The rewritten `tradingbot_data.ipynb` validates that existing
+map and report before derived work runs. Exact preflight scope is in
+`docs/evidence/2026-08-14-colab-coverage-map.md`; the rewrite scope is in
+`docs/evidence/2026-08-15-colab-notebook-rewrite.md`.
 
 ## Available Artifacts
 
@@ -131,6 +130,39 @@ Drive. Exact scope is in `docs/evidence/2026-08-14-colab-coverage-map.md`.
   all 13 local tests passed. Exact scope and measurements are in
   `docs/evidence/2026-08-14-local-feature-view-canary.md`. This revision is
   not yet published or installed in Colab.
+- The published `0.3.0` package has now run remotely across the first derived
+  feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully
+  usable and 36 retain invalidity flags. Twenty-eight days were processed and
+  the verified-shape July 27 output was skipped; June 29 was excluded by
+  policy. Exact scope is in
+  `docs/evidence/2026-08-14-colab-feature-view-batch.md`.
+- The first quality review classified those 36 rows as 29
+  `received_after_cutoff` rows and 7 `missing_kline` rows. The 29-to-29-day
+  pattern was confirmed as exactly one `00:00:00Z` opening-boundary row per
+  eligible day. The 7 missing-lookback rows are isolated intraday gaps on July
+  1, July 25, July 26, and July 27; they remain preserved for row-level
+  review. Exact counts and timestamps are in
+  `docs/evidence/2026-08-14-colab-feature-quality-review.md`.
+- The separate Binance proxy-target canary also passed remotely for July 27:
+  283 valid targets out of 288 windows, 2 missing start boundaries, and 3
+  missing end boundaries. All 283 valid targets had late start receipts, which
+  is allowed for offline target construction and is not feature leakage. Exact
+  scope is in `docs/evidence/2026-08-14-colab-proxy-target-canary.md`.
+- The 29-day proxy-target batch produced 8,299 valid targets out of 8,352
+  windows, with 13 missing start boundaries, 40 missing end boundaries, and no
+  duplicates. Timestamp review found 29 final `23:55:00` windows and 11
+  non-final missing-end windows; the 13 missing-start rows are also intraday.
+  The final-window boundaries may be recoverable from adjacent-day archives,
+  so the invalid target count is not final until that source-boundary question
+  is resolved. Exact measurements are in
+  `docs/evidence/2026-08-14-colab-proxy-target-batch.md`.
+- The Colab notebook was rewritten into a 23-cell Phase 1 runbook pinned to
+  package revision `8bc95e2333348fcce784d0a497f38c44bd1e3a66` (`0.3.0`). It
+  verifies control artifacts, runs feature and proxy views separately, and
+  stops before unresolved target boundaries are joined to features. Local
+  JSON and code-cell validation passed; the notebook was not re-executed
+  remotely during the rewrite. Exact scope is in
+  `docs/evidence/2026-08-15-colab-notebook-rewrite.md`.
 - Recorder source code is not currently present in this workspace.
 
 The accepted working architecture keeps the large raw archives in remote
@@ -246,14 +278,12 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Review and publish the tested `0.3.0` package revision, then install that
-   exact revision in Colab.
-2. Build the feature view remotely for the 29 eligible groups, excluding June
-   29 from the first derived view while preserving its raw and audit evidence.
-3. Determine which historical Chainlink labels and reference values can be
+1. Classify invalid proxy-target rows as archive-edge effects versus intraday
+   gaps, preserving all rows and `label_source` identity.
+2. Determine which historical Chainlink labels and reference values can be
    recovered.
-4. Correct or replace the recorder before collecting additional research data.
-5. Define and evaluate the official in-window dataset separately from the
+3. Correct or replace the recorder before collecting additional research data.
+4. Define and evaluate the official in-window dataset separately from the
    proxy dataset.
 
 No model training should begin from the sample archive alone.

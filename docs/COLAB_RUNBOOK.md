@@ -1,13 +1,16 @@
 # Google Colab Runbook
 
-This is the execution handoff for the remote archive audit. Colab runs the
-package; Google Drive stores raw archives, manifests, coverage maps, and audit
-outputs. The repository must contain code only.
+This is the execution handoff for the remote archive and derived-view workflow.
+The ordered `tradingbot_data.ipynb` is the maintained Colab runbook. Colab runs
+the package; Google Drive stores raw archives, manifests, coverage maps, and
+derived outputs. The repository must contain code and runbook documentation,
+not raw data.
 
 ## 1. Clone a pinned revision
 
 Use the repository URL and a reviewed commit or tag supplied by the project
-owner:
+owner. The current feature/proxy runbook is pinned to
+`8bc95e2333348fcce784d0a497f38c44bd1e3a66`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -16,6 +19,11 @@ owner:
 !pip install .
 !tradingbot-data --help
 ```
+
+After setup, execute `tradingbot_data.ipynb` from top to bottom. It verifies
+the existing manifest, coverage map, and checksum-bearing audit outputs before
+running the derived feature and proxy views. It stops at the adjacent-boundary
+recovery gate until that target policy is explicitly accepted.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.
@@ -46,7 +54,7 @@ data-quality rules.
 !tradingbot-data manifest \
   --archive-dir "/content/drive/MyDrive/<project>/raw-archives" \
   --output "/content/drive/MyDrive/<project>/manifest.json" \
-  --audit-version "tradingbot-data-0.2.0-<commit>" \
+  --audit-version "tradingbot-data-0.3.0-<commit>" \
   --policy-version "data-quality-2026-08-14" \
   --layout grouped-gzip \
   --recursive
@@ -63,7 +71,9 @@ the input collection or processing identity changes.
 ## 4. Verify the coverage map
 
 The map must explicitly identify the UTC midnight that each logical group
-covers:
+covers. For the current collection, the map and report have already been
+created and verified. The maintained notebook validates their group identities
+and UTC-midnight alignment before any derived work runs:
 
 ```json
 {
@@ -71,10 +81,12 @@ covers:
 }
 ```
 
-The group ID is candidate grouping information, not coverage proof. Verify the
-map from timestamps inside the raw inputs. If coverage is ambiguous or spans
-multiple days, mark it for review and do not run that group until its scope is
-resolved.
+The group ID is candidate grouping information, not coverage proof. The
+coverage report must have compared observed receipt dates with candidate dates.
+If coverage is ambiguous, malformed, missing, or spans multiple days, do not
+run the batch until the scope is resolved. For a new collection, generate a
+new report and map with a dedicated preflight before using this notebook; never
+infer the day from an upload filename.
 
 ## 5. Run one group smoke test
 

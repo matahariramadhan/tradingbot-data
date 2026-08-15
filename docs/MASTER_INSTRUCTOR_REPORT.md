@@ -135,8 +135,10 @@ and should remain deferred until the data-readiness gate passes.
 
 ## Recommended Next Lesson
 
-The pinned Colab installation of package version `0.2.0` has passed at revision
-`03abbb745cc7919087b2e56607bb6bdf4d582a23`. The inspected Drive manifest now
+The earlier grouped-GZIP workflow was pinned and verified at package version
+`0.2.0`, revision `03abbb745cc7919087b2e56607bb6bdf4d582a23`. The current
+feature/proxy workflow is pinned to package version `0.3.0`, revision
+`8bc95e2333348fcce784d0a497f38c44bd1e3a66`. The inspected Drive manifest now
 has all 30 groups processed successfully, with the expected 89 raw members, one
 explicit missing Polymarket role, and 10 ignored derived files. The local
 byte-identical July 27 direct-GZIP reproduction matches the known baseline, and
@@ -149,9 +151,22 @@ largest gap of 645 seconds. The learner accepted excluding source-incomplete,
 severely under-covered June 29 from the first feature/proxy view while retaining
 all raw/audit evidence, and retaining other days for row-level gap-aware
 validity. The local `0.3.0` feature-view builder now passes 13 tests and its
-July 27 canary produced 284 usable rows out of 288. Next, publish that revision,
-run the feature view for the 29 eligible remote groups, and measure valid rows
-before discussing models.
+July 27 canary produced 284 usable rows out of 288. The published revision's
+remote batch is now complete: 8,316 of 8,352
+rows are fully usable, with 36 invalid rows preserved for quality-flag review.
+The first classification found 29 `received_after_cutoff` rows and 7
+`missing_kline` rows. The next lesson is to inspect their exact timestamps,
+which confirmed one opening-boundary row per eligible day and seven isolated
+intraday gaps. The next lesson is to join a separate Binance proxy target view.
+The July 27 remote proxy canary now matches the corrected local result: 283
+valid targets and 5 missing-boundary windows. All valid target start receipts
+were late, which is allowed for offline target construction but never for
+decision-time features. The 29-day batch produced 8,299 valid targets out of
+8,352. Timestamp review found 29 final `23:55:00` windows and 11 non-final
+missing-end windows; the 13 missing-start rows are intraday. The next lesson
+is to check adjacent-day recovery before joining targets to features. The
+Colab notebook was then rewritten into a 23-cell pinned Phase 1 runbook and
+passed local JSON/code validation; it now stops at that recovery gate.
 
 ## Resume Instructions
 
