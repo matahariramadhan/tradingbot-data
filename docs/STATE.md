@@ -199,6 +199,12 @@ map and report before derived work runs. Exact preflight scope is in
   19-test local suite passes; the repinned notebook has not yet rerun the join
   in Colab. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
+- The corrected proxy join has now run remotely. It produced 8,352 audit rows
+  and 8,292 leakage-safe model-ready rows across the 29 eligible days; 60 rows
+  remain excluded by feature/target validity. The model view contains only the
+  three initial Binance features plus identifiers, label, and proxy-source
+  metadata. Exact measurements and Drive paths are in
+  `docs/evidence/2026-08-15-colab-proxy-join.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -319,9 +325,9 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the resumable proxy join against the recovered target view. Verify
-   duplicate-key,
-   eligibility, row-count, and model-column controls.
+1. Review the proxy model-ready view's label balance, feature numeric quality,
+   chronological ordering, and per-row exclusion reasons. Then define a
+   chronological baseline train/evaluation split; do not randomize windows.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

@@ -102,6 +102,7 @@ class ArchiveWorkflowTests(unittest.TestCase):
             "apply_proxy_boundary_recovery.py",
             "build_binance_feature_view.py",
             "build_proxy_join.py",
+            "review_proxy_model_view.py",
         ):
             completed = subprocess.run(
                 [sys.executable, str(SCRIPTS_DIR / name), "--help"],

@@ -137,6 +137,12 @@ to run the separate model-ready Binance-feature/proxy-target join. Preserve the
 unresolved July 28 boundary and all intraday invalid rows; keep the proxy
 `label_source` separate from official label recovery.
 
+The join has now run remotely: 8,352 audit rows and 8,292 model-ready rows
+were produced, with 60 rows excluded for invalid feature/target data. The next
+checkpoint is reviewing label balance, numeric feature quality, chronological
+ordering, and exclusion reasons before designing a chronological baseline
+split.
+
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
