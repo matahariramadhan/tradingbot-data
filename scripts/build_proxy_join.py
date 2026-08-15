@@ -23,6 +23,7 @@ except ImportError:
 
 
 REPORT_SCHEMA_VERSION = 1
+JOIN_IMPLEMENTATION_VERSION = "0.5.2"
 KEY_FIELD = "window_start_utc"
 MODEL_FEATURE_COLUMNS = ["return_1s", "return_1m", "volatility_1m"]
 MODEL_COLUMNS = [
@@ -291,6 +292,7 @@ def main() -> int:
 
     state: dict[str, Any] = {
         "join_report_schema_version": REPORT_SCHEMA_VERSION,
+        "join_implementation_version": JOIN_IMPLEMENTATION_VERSION,
         "status": "running",
         "feature_dir": str(feature_dir),
         "target_dir": str(target_dir),
@@ -309,6 +311,8 @@ def main() -> int:
         if (
             isinstance(previous, dict)
             and previous.get("join_report_schema_version") == REPORT_SCHEMA_VERSION
+            and previous.get("join_implementation_version")
+            == JOIN_IMPLEMENTATION_VERSION
             and previous.get("feature_dir") == str(feature_dir)
             and previous.get("target_dir") == str(target_dir)
             and previous.get("audit_output_dir") == str(audit_output_dir)

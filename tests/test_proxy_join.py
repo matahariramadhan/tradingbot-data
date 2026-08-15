@@ -128,6 +128,15 @@ class ProxyJoinTests(unittest.TestCase):
             report = json.loads((root / "join-report.json").read_text())
             self.assertEqual(report["status"], "completed")
             self.assertEqual(report["totals"]["eligible_rows"], 1)
+            report["join_implementation_version"] = "old-version"
+            (root / "join-report.json").write_text(
+                json.dumps(report), encoding="utf-8"
+            )
+            rerun = subprocess.run(
+                self.command(root), cwd=ROOT, capture_output=True, text=True
+            )
+            self.assertEqual(rerun.returncode, 0, rerun.stderr)
+            self.assertIn("2026-07-27: joining", rerun.stdout)
 
     def test_duplicate_key_stops_join(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
