@@ -62,9 +62,10 @@ limitation later.
 
 The learner also accepted an independent Binance historical source rather than
 the existing recorder archive, at least 100 completed daily candles of warm-up,
-and multi-timeframe aggregation from the same 1-minute source. Summarize the
-100 daily candles into interpretable regime features and use only the last
-completed 1-hour, 4-hour, or daily candle at each decision time.
+and multi-timeframe aggregation from the same 1-minute source for the later
+regime-feature experiment. That broader block is deferred. The current V1
+short-term notebook intentionally downloads only the one warm-up day needed
+for its 65-minute lookback.
 
 For the first implementation, the learner narrowed the scope to these
 short-term features: `return_1m`, `return_5m`, `return_15m`, `return_30m`,

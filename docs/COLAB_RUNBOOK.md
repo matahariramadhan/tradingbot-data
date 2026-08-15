@@ -176,7 +176,9 @@ It uses package `0.9.0`, pinned at commit
 The notebook downloads independent BTCUSDT 1-minute klines for
 `2026-06-29` through `2026-07-28` inclusive. The extra June 29 day supplies
 lookback history; target rows cover June 30 through July 28 inclusive. The
-downloader writes one CSV per UTC day and checkpoints after each day. The
+later 100-day/1-hour/4-hour regime block is intentionally deferred; this V1
+needs only the short-term lookback warm-up. The downloader writes one CSV per
+UTC day and checkpoints after each day. The
 dataset builder writes one 96-row audit CSV per target day and checkpoints
 after each day. Both rerun safely from Google Drive after a Colab interruption.
 
