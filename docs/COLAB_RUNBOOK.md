@@ -51,8 +51,8 @@ clear message rather than silently rebuilding or guessing it.
 
 ## 1. Clone a pinned revision
 
-Use the repository URL and the reviewed feature-corrected commit
-`a3e038a648ed8d182377147eddd64742bfc50495`:
+Use the repository URL and the reviewed chronological-split commit
+`45a317e9d215d935a496ed6ce0a9e5ff3ac35d45`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The quality-review-capable package revision is `0.6.1`. Do not run recovery,
+The quality-review-capable package revision is `0.7.0`. Do not run recovery,
 joining, or review from an unpinned working tree. After commit
-`a3e038a648ed8d182377147eddd64742bfc50495` is available from the repository,
+`45a317e9d215d935a496ed6ce0a9e5ff3ac35d45` is available from the repository,
 run:
 
 ```python
@@ -115,6 +115,20 @@ Then run the proxy model-view quality review:
 This read-only review reports label balance, finite numeric feature statistics,
 chronological key validity, proxy-label provenance, and row-level exclusion
 reasons. It does not train a model.
+
+Then build the durable chronological proxy split report:
+
+```python
+!tradingbot-data proxy-split \
+  --model-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-model-view-v1" \
+  --review-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-model-review-v1.json" \
+  --output-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-split-v1.json" \
+  --train-day-count 23
+```
+
+The report records per-day row counts and source hashes and verifies that all
+training keys precede evaluation keys, with zero train/evaluation key overlap.
+It does not copy rows or train a model.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.

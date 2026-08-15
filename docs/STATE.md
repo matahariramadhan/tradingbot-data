@@ -83,9 +83,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes the corrected proxy
-  feature-view implementation at `a3e038a`; the notebook is being repinned to
-  package `0.6.1` at that commit.
+- Git origin is configured. Local `main` includes the chronological split
+  implementation at `45a317e`; the notebook is being repinned to package
+  `0.7.0` at that package commit.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -181,14 +181,14 @@ map and report before derived work runs. Exact preflight scope is in
   8,327 valid rows and 25 invalid rows out of 8,352; the original target view
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
-- The Colab notebook is now a 31-cell Phase 1 runbook pinned to package
-  commit `a3e038a648ed8d182377147eddd64742bfc50495` (`0.6.1`). It verifies control
+- The Colab notebook is now a 33-cell Phase 1 runbook pinned to package
+  commit `45a317e9d215d935a496ed6ce0a9e5ff3ac35d45` (`0.7.0`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
-  proxy model-view quality review. Exact rewrite history is in
+  proxy model-view quality review, and chronological proxy split report. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.6.1` implementation now provides the proxy dataset-quality
+- The package `0.7.0` implementation now provides the proxy dataset-quality
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
@@ -226,6 +226,12 @@ map and report before derived work runs. Exact preflight scope is in
   `docs/evidence/2026-08-15-colab-proxy-model-review-after-fix.md`. The
   Binance proxy engineering-view gate is complete; official Chainlink target
   recovery and the later Polymarket-faithful dataset remain unresolved.
+- The package now provides `proxy-split`, which builds the accepted 23-day/
+  6-day chronological split report without copying rows. It records per-day
+  counts and hashes and verifies zero train/evaluation key overlap plus row
+  agreement with the quality review. Local tests pass; remote execution is
+  pending. Exact implementation scope is in
+  `docs/evidence/2026-08-15-chronological-proxy-split-implementation.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -352,10 +358,10 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Build and verify the accepted chronological split artifact: first 23
-   eligible UTC days for training and final 6 eligible UTC days for evaluation.
-   Do not randomize windows. Keep this proxy baseline separate from final
-   official Polymarket claims.
+1. Run the pinned `0.7.0` notebook and verify the accepted chronological split
+   artifact: first 23 eligible UTC days for training and final 6 eligible UTC
+   days for evaluation. Do not randomize windows. Keep this proxy baseline
+   separate from final official Polymarket claims.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be
