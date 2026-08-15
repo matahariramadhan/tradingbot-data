@@ -83,9 +83,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes the chronological split
-  implementation at `45a317e`; the notebook is being repinned to package
-  `0.7.0` at that package commit.
+- Git origin is configured. Local `main` includes stage-specific feature
+  provenance at `7c70fb2`; the notebook is being repinned to package `0.7.1`
+  at that package commit.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -182,13 +182,13 @@ map and report before derived work runs. Exact preflight scope is in
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
 - The Colab notebook is now a 33-cell Phase 1 runbook pinned to package
-  commit `45a317e9d215d935a496ed6ce0a9e5ff3ac35d45` (`0.7.0`). It verifies control
+  commit `7c70fb2435865759fef231170da7e87eea1aa010` (`0.7.1`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
   proxy model-view quality review, and chronological proxy split report. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.7.0` implementation now provides the proxy dataset-quality
+- The package `0.7.1` implementation now provides the proxy dataset-quality
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
@@ -213,11 +213,11 @@ map and report before derived work runs. Exact preflight scope is in
   The intended policy is the net return from the first to the last close over
   the complete 60-second lookback. That pre-fix output is evidence only and
   must not be used for training or evaluation.
-- The `return_1m` fix is now implemented and regression-tested in package
+- The `return_1m` fix is implemented and regression-tested in package
   `0.6.1`. The pinned notebook invalidates old feature outputs when their
-  persisted package revision/version does not match the current run, so the
-  corrected feature view will not be silently skipped. Exact implementation
-  and test evidence are in
+  persisted feature implementation identity does not match the current run,
+  while the known valid `0.6.1` output is accepted as compatible. Exact
+  implementation and test evidence are in
   `docs/evidence/2026-08-15-net-return-feature-fix.md`.
 - The post-fix remote review completed with the same 8,352 audit rows, 8,292
   model rows, 60 exclusions, balanced labels, and chronological keys. The
@@ -232,6 +232,11 @@ map and report before derived work runs. Exact preflight scope is in
   agreement with the quality review. Local tests pass; remote execution is
   pending. Exact implementation scope is in
   `docs/evidence/2026-08-15-chronological-proxy-split-implementation.md`.
+- Package `0.7.1` now separates feature-output provenance from global package
+  versioning. The next notebook run can reuse the verified corrected feature
+  CSVs when only split/report code changed; only a feature implementation or
+  policy identity change triggers the expensive raw scan. Exact scope is in
+  `docs/evidence/2026-08-15-stage-specific-feature-provenance.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -358,7 +363,7 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the pinned `0.7.0` notebook and verify the accepted chronological split
+1. Run the pinned `0.7.1` notebook and verify the accepted chronological split
    artifact: first 23 eligible UTC days for training and final 6 eligible UTC
    days for evaluation. Do not randomize windows. Keep this proxy baseline
    separate from final official Polymarket claims.

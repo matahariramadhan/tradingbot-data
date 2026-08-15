@@ -51,8 +51,8 @@ clear message rather than silently rebuilding or guessing it.
 
 ## 1. Clone a pinned revision
 
-Use the repository URL and the reviewed chronological-split commit
-`45a317e9d215d935a496ed6ce0a9e5ff3ac35d45`:
+Use the repository URL and the reviewed selective-regeneration commit
+`7c70fb2435865759fef231170da7e87eea1aa010`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The quality-review-capable package revision is `0.7.0`. Do not run recovery,
+The quality-review-capable package revision is `0.7.1`. Do not run recovery,
 joining, or review from an unpinned working tree. After commit
-`45a317e9d215d935a496ed6ce0a9e5ff3ac35d45` is available from the repository,
+`7c70fb2435865759fef231170da7e87eea1aa010` is available from the repository,
 run:
 
 ```python
@@ -129,6 +129,11 @@ Then build the durable chronological proxy split report:
 The report records per-day row counts and source hashes and verifies that all
 training keys precede evaluation keys, with zero train/evaluation key overlap.
 It does not copy rows or train a model.
+
+Feature CSV reuse is controlled by the feature implementation identity, not the
+global package version. A package-only change for split/report work therefore
+reuses compatible feature outputs; a feature algorithm or policy change must
+publish a new feature identity and regenerate them.
 
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.

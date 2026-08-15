@@ -117,7 +117,7 @@ The student currently understands the distinction between:
   unrecoverable from the scanned collection. Those 28 observations have now
   been applied in the separate recovered target view.
 - The Colab notebook is now a 33-cell Phase 1 runbook pinned to package
-  `45a317e9d215d935a496ed6ce0a9e5ff3ac35d45` (`0.7.0`). It verifies existing
+  `7c70fb2435865759fef231170da7e87eea1aa010` (`0.7.1`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
   recovery into a separate target view, adds a resumable model-ready join, and
   adds a proxy model-view quality review and chronological proxy split report.
@@ -146,11 +146,11 @@ designing a chronological baseline split for the proxy engineering view.
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
-  three initial feature columns. It is package `0.7.0` at commit
-  `45a317e9d215d935a496ed6ce0a9e5ff3ac35d45`, has passed 24 local tests, and the
+  three initial feature columns. It is package `0.7.1` at commit
+  `7c70fb2435865759fef231170da7e87eea1aa010`, has passed 25 local tests, and the
 quality review has completed remotely with 8,292 model rows, balanced labels,
 and corrected feature semantics. The pinned notebook invalidates old feature
-outputs when their package provenance does not match. Next, teach and define a
+outputs when their feature implementation provenance does not match. Next, teach and define a
 chronological proxy baseline split. The split implementation verifies zero
 train/evaluation key overlap and row agreement with the review report; run the
 pinned notebook before training and do not mix this proxy baseline with
