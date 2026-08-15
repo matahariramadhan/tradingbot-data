@@ -51,14 +51,14 @@ clear message rather than silently rebuilding or guessing it.
 
 ## 1. Clone a pinned revision
 
-Use the repository URL and the reviewed selective-regeneration commit
-`657adfd123767dee6bb4685ab4ee98a2c8314bd2`:
+Use the repository URL and the reviewed baseline-training commit
+`c02f801c45f43853c7aecd9e7a627da63ffa7325`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
 %cd /content/tradingbot_v2
 !git checkout <reviewed-commit>
-!pip install .
+!pip install ".[training]"
 !tradingbot-data --help
 ```
 
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The quality-review-capable package revision is `0.7.2`. Do not run recovery,
+The quality-review-capable package revision is `0.8.0`. Do not run recovery,
 joining, or review from an unpinned working tree. After commit
-`657adfd123767dee6bb4685ab4ee98a2c8314bd2` is available from the repository,
+`c02f801c45f43853c7aecd9e7a627da63ffa7325` is available from the repository,
 run:
 
 ```python
@@ -129,6 +129,25 @@ Then build the durable chronological proxy split report:
 The report records per-day row counts and source hashes and verifies that all
 training keys precede evaluation keys, with zero train/evaluation key overlap.
 It does not copy rows or train a model.
+
+Then run the first proxy baseline:
+
+```python
+!tradingbot-data proxy-baseline \
+  --model-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-model-view-v1" \
+  --split-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-split-v1.json" \
+  --review-report "/content/drive/MyDrive/tradingbot-data-audit/proxy-model-review-v1.json" \
+  --output-dir "/content/drive/MyDrive/tradingbot-data-audit/proxy-baseline-v1"
+```
+
+The command fits a standardized logistic regression on training rows only and
+evaluates once on the later evaluation days. It uses only
+`return_1s`, `return_1m`, and `volatility_1m`; target prices, target receipt
+times, labels, and other future-only fields are not model inputs. It writes a
+joblib model, evaluation predictions, and a checksum-bearing JSON report. On a
+rerun, it skips only when those outputs still match the same split report.
+This is a Binance-proxy engineering result and must not be presented as the
+final Polymarket research result.
 
 Feature CSV reuse is controlled by the feature implementation identity and each
 day's raw-source SHA-256, not the global package version. A package-only change

@@ -7,9 +7,11 @@ This file describes the present, not project history or detailed evidence.
 
 ## Current Position
 
-The project is in data foundations and data-quality assessment. No research
-dataset, model, backtest, or trading system has been implemented in this
-workspace yet.
+The project has completed the Binance proxy data-foundation and chronological
+split gates. The first proxy-baseline training command is implemented, but its
+remote training run has not yet produced a verified model report. No official
+research dataset, backtest, or trading system has been implemented in this
+workspace.
 
 `instruction.md` is the immutable project charter. The teaching approach is
 defined separately in `docs/LEARNING_CONTRACT.md`.
@@ -181,11 +183,12 @@ map and report before derived work runs. Exact preflight scope is in
   8,327 valid rows and 25 invalid rows out of 8,352; the original target view
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
-- The Colab notebook is now a 33-cell Phase 1 runbook pinned to package
-  commit `657adfd123767dee6bb4685ab4ee98a2c8314bd2` (`0.7.2`). It verifies control
+- The Colab notebook is now a 35-cell Phase 1 runbook pinned to package
+  commit `c02f801c45f43853c7aecd9e7a627da63ffa7325` (`0.8.0`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
-  proxy model-view quality review, and chronological proxy split report. Exact rewrite history is in
+  proxy model-view quality review, chronological proxy split report, and the
+  first proxy baseline. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
 - The package `0.7.2` implementation now provides the proxy dataset-quality
@@ -229,9 +232,18 @@ map and report before derived work runs. Exact preflight scope is in
 - The package now provides `proxy-split`, which builds the accepted 23-day/
   6-day chronological split report without copying rows. It records per-day
   counts and hashes and verifies zero train/evaluation key overlap plus row
-  agreement with the quality review. Local tests pass; remote execution is
-  pending. Exact implementation scope is in
+  agreement with the quality review. The remote split completed with 6,586
+  training rows, 1,706 evaluation rows, 8,292 total rows, and zero overlap.
+  Exact implementation scope and run evidence are in
   `docs/evidence/2026-08-15-chronological-proxy-split-implementation.md`.
+- Package `0.8.0` adds `proxy-baseline`, an optional-dependency training
+  command that verifies the split report and per-day source hashes, fits a
+  standardized logistic regression using only the three decision-time
+  features, evaluates on the later days once, and writes a joblib model,
+  evaluation predictions, and checksum-bearing metrics report to Drive. It
+  skips only when those outputs remain verified against the same split. The
+  remote training run is the next gate; its design is intentionally a proxy
+  engineering baseline, not a final Polymarket result.
 - Package `0.7.2` now separates feature-output provenance from global package
   versioning. The next notebook run can reuse the verified corrected feature
   CSVs when only split/report code changed; only a feature implementation or
@@ -363,10 +375,11 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Run the pinned `0.7.2` notebook and verify the accepted chronological split
-   artifact: first 23 eligible UTC days for training and final 6 eligible UTC
-   days for evaluation. Do not randomize windows. Keep this proxy baseline
-   separate from final official Polymarket claims.
+1. Run the pinned `0.8.0` notebook's proxy-baseline cell and verify the
+   checksum-bearing model, prediction CSV, and metrics report. Compare its
+   evaluation metrics with the majority baseline before changing features or
+   model families. Keep this proxy baseline separate from final official
+   Polymarket claims.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

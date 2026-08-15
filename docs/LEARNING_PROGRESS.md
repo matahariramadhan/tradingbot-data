@@ -346,3 +346,9 @@ period for evaluation.
 This is an engineering/proxy baseline split, not an official Polymarket
 research result. The next step is to build a persisted split manifest and
 verify the resulting usable-row counts before training.
+
+The persisted split was then executed remotely and verified: 8,292 model rows
+were partitioned into 6,586 training rows and 1,706 evaluation rows, with zero
+overlap in `window_start_utc` keys. The learner is ready for the first simple
+proxy baseline. The training gate will compare that model with a majority-class
+baseline before any feature tuning or more complex model is considered.
