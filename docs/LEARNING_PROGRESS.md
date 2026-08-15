@@ -405,3 +405,11 @@ and measure them under horizon-specific chronological validation and untouched
 holdouts. This demonstrates an important experimental principle: target horizon
 is a hypothesis to evaluate, not a parameter to choose after inspecting final
 test performance. The canonical rule is `docs/DATA_QUALITY_POLICY.md` rule 20.
+
+The learner immediately recognized that simultaneous three-horizon research
+would make the learning problem unnecessarily complicated and chose one active
+target: 15-minute Binance direction. The five-minute baseline remains useful
+engineering history, while 5-versus-15-versus-60-minute comparison is postponed
+until the learner understands the full 15-minute loop. This is a deliberate
+scope reduction, not a conclusion that 15 minutes is objectively best. The
+canonical rule is `docs/DATA_QUALITY_POLICY.md` rule 21.

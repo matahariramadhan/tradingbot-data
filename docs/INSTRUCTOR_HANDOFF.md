@@ -42,38 +42,22 @@ for the next execution and learning slice. Do not rerun the baseline, raw
 audits, feature scans, recovery, join, or chronological split while their
 persisted identities and checksums remain valid.
 
-The next slice is not “try a more powerful model.” Freeze the observed six-day
-evaluation result and use only the 6,586 training-period rows for diagnostic
-EDA of the original directional-regime hypothesis. Build human-readable plots
-that answer:
+The completed five-minute experiment is now historical engineering evidence.
+Do not continue its EDA or tune against its observed six-day evaluation. The
+learner deliberately simplified the next slice to one 15-minute Binance
+direction task.
 
-1. Does proxy `UP` frequency change across signed `return_1m` quantiles?
-2. Does that relationship change between low- and high-`volatility_1m`
-   regimes?
-3. Does the latest `return_1s` appear to add information beyond the minute
-   direction, or is it mostly noise near zero?
+Build the smallest understandable end-to-end historical-data slice that:
 
-Show sample counts with every bin and avoid conclusions from tiny tail groups.
-Use no evaluation-period rows while selecting bins, interactions, or candidate
-features. If training-only EDA suggests one interpretable nonlinear pattern,
-write one explicit hypothesis and validation plan before implementing a second
-experiment. If it shows no credible pattern, report that conclusion and propose
-the next hypothesis-driven Binance signal or data-coverage improvement. Do not
-redirect the learner to Chainlink merely because this three-feature proxy view
-is weak: Chainlink is deferred to later Polymarket-faithful validation under
-`docs/DATA_QUALITY_POLICY.md` rule 19.
+1. loads a manageable amount of verified historical Binance data;
+2. creates non-overlapping 15-minute `UP`/`DOWN` labels without future leakage;
+3. shows a few human-readable feature and label plots; and
+4. persists a chronological train/validation/final-holdout definition.
 
-Do not introduce a tree ensemble, neural network, GPU, backtest, or trading
-logic at this checkpoint. Ask only two or three interpretation questions, and
-handle plotting mechanics for the learner.
-
-After this compact EDA lesson, design the next dataset layer around large
-historical Binance coverage. Parameterize the target horizon rather than
-hard-coding five minutes, and produce separate 5-minute, 15-minute, and
-60-minute tasks under `docs/DATA_QUALITY_POLICY.md` rule 20. Treat “a longer
-horizon may be easier” as a hypothesis. Do not use the already observed six-day
-evaluation period to choose the winning horizon, and do not jump to a stronger
-model before the expanded data and evaluation design are verified.
+Keep the horizon configurable internally, but do not expose or compare other
+horizons in this lesson. Do not introduce a tree ensemble, neural network, GPU,
+backtest, or trading logic yet. Ask only two or three interpretation questions
+and handle data-download, plotting, and boilerplate mechanics for the learner.
 
 ## Project Context
 
@@ -178,12 +162,9 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-Start a training-period-only proxy EDA report. Reload the training-day list and
-per-day hashes from `proxy-split-v1.json`, read only those model-view CSVs, and
-persist the report and plots under
-`/content/drive/MyDrive/tradingbot-data-audit/proxy-training-eda-v1/`. The first
-deliverable is evidence about directional return versus volatility regimes,
-not another fitted model.
+Start the single-horizon 15-minute historical Binance dataset slice described
+above. The first deliverable is a small, observable dataset and split report,
+not a stronger model.
 
 The completed baseline was correct on 854 of 1,706 later evaluation rows,
 versus 845 for the training-majority baseline; ROC-AUC was 0.487225 and

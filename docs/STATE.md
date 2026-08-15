@@ -300,10 +300,11 @@ later. A later Polymarket-faithful task will keep fixed market start/end times
 separate from a decision time that may occur inside the market window. These are
 different prediction problems and their evaluations must remain separate.
 
-The expanded historical Binance track will parameterize that clean task into
-separate 5-minute, 15-minute, and 60-minute horizons. Longer horizons are
-candidate hypotheses, not presumed improvements. The comparison contract and
-holdout rules are defined in `docs/DATA_QUALITY_POLICY.md` rule 20.
+The active historical Binance learning track now focuses on one 15-minute
+direction task. The dataset interface keeps the horizon explicit, but building
+and comparing 5-minute and 60-minute tasks is postponed until the learner is
+comfortable with the complete 15-minute loop. This simplification supersedes
+the earlier multi-horizon scope under `docs/DATA_QUALITY_POLICY.md` rule 21.
 
 For the initial proxy baseline, the accepted chronological split uses the first
 23 eligible UTC days for training (`2026-06-30` through `2026-07-22`) and the
@@ -406,21 +407,13 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Freeze the observed chance-level baseline and build a training-period-only
-   proxy EDA for the directional-regime hypothesis. Inspect conditional proxy
-   `UP` rates across signed minute-return and volatility regimes, with bin
-   counts, before proposing one explicit second experiment. Do not use the six
-   observed evaluation days for exploratory feature selection or call them an
-   untouched test set afterward. Keep all proxy results separate from final
-   official Polymarket claims. Continue with hypothesis-driven Binance signal
-   research after this EDA when justified; missing Chainlink data is not the
-   current learning bottleneck.
-2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
+1. Build a simple reusable historical Binance dataset pipeline for one
+   non-overlapping 15-minute direction target. Start with a transparent feature
+   baseline and one chronological train/validation/final-holdout design.
+2. Preserve the completed five-minute baseline as engineering evidence; do not
+   keep tuning or extending that observed split.
+3. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
-3. Build a reusable historical Binance dataset pipeline with separately
-   identified 5-minute, 15-minute, and 60-minute targets. Increase clean history
-   before claiming that the current three-feature result generalizes or
-   spending the frozen six-day period on repeated tuning.
 4. Correct or replace the recorder before collecting additional research data.
 5. Later, recover Chainlink labels and define the official in-window dataset
    separately from the proxy dataset; add Polymarket prices and liquidity when

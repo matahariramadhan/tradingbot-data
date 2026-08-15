@@ -87,6 +87,8 @@ The learner accepted these durable design choices:
   executable decision research;
 - compare separate 5-minute, 15-minute, and 60-minute Binance direction tasks
   instead of assuming the original five-minute horizon is optimal;
+- supersede that multi-horizon scope for learning simplicity and focus only on
+  a 15-minute Binance direction task until its complete loop is understood;
 - start with a clean five-minute future-window proxy where decision time equals
   window start;
 - use the completed one-second closes immediately before the proxy start and
@@ -154,21 +156,13 @@ backtesting, paper trading, and live trading remain deferred.
 
 ## Recommended Next Lesson
 
-The completed baseline was correct on 854 of 1,706 evaluation rows, only nine
-more than the training-majority baseline; ROC-AUC was 0.487225 and probability
-losses were essentially coin-flip level. The learner is returning to the
-lower-cost mentor for a training-period-only diagnostic EDA of the original
-directional-regime hypothesis. Use signed minute-return bins, volatility
-regimes, and explicit bin counts; do not inspect the six evaluation days while
-selecting a second feature or model. Approve at most one explicit second
-experiment after the EDA. If no credible pattern appears, propose the next
-hypothesis-driven Binance signal or data-coverage improvement rather than
-redirecting the learner to Chainlink. Do not claim trading performance.
-
-The subsequent dataset milestone is a larger-history Binance pipeline with a
-parameterized horizon and separate 5-minute, 15-minute, and 60-minute tasks.
-Use chronological training, validation, and final-holdout periods for the new
-history; do not select the horizon from the already observed six-day result.
+The completed five-minute baseline is now preserved as historical engineering
+evidence. The learner is returning to the lower-cost mentor for one simpler
+task: build an understandable historical Binance dataset for non-overlapping
+15-minute direction labels, visualize it, and persist a chronological
+train/validation/final-holdout definition. Keep the implementation internally
+configurable, but do not teach or compare other horizons yet. Do not claim
+trading performance.
 
 ## Resume Instructions
 

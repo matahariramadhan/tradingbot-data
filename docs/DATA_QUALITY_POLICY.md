@@ -94,6 +94,15 @@ Scope: First BTC feature pipeline
     count, class balance, probability metrics, and regime behavior separately.
     Select features, models, and horizons using training and validation data;
     keep the final holdout untouched until the experiment is frozen.
+21. Supersede rule 20 as the active learning scope: build only the 15-minute
+    Binance direction task for now. Keep the horizon parameter explicit in the
+    dataset interface, but do not build or compare 5-minute and 60-minute tasks
+    during this learning slice. Use non-overlapping 15-minute windows, with the
+    label comparing the verified Binance boundary immediately before the start
+    with the boundary immediately before `start + 15 minutes`. Preserve the
+    completed five-minute baseline as historical engineering evidence. Revisit
+    other horizons only after the learner is comfortable with the complete
+    15-minute dataset-to-evaluation loop.
 
 ## Initial Output Fields
 
