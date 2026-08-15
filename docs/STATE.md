@@ -140,9 +140,8 @@ map and report before derived work runs. Exact preflight scope is in
   valid boundary. The proxy builder now preserves partial boundaries, and
   recovery can repair legacy final-window rows only from an exact adjacent
   boundary. Package version `0.4.1` is committed at
-  `41fdff5619d4c00389628eb526f9f66ac19f3650`; the commits are pushed, but the
-  recovery has not yet been rerun remotely. Exact diagnosis and validation are
-  in
+  `41fdff5619d4c00389628eb526f9f66ac19f3650`; the commits are pushed and the
+  recovery has now been rerun remotely. Exact diagnosis and validation are in
   `docs/evidence/2026-08-15-proxy-recovery-legacy-row-fix.md`.
 - The published `0.3.0` package has now run remotely across the first derived
   feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully
@@ -182,11 +181,11 @@ map and report before derived work runs. Exact preflight scope is in
   8,327 valid rows and 25 invalid rows out of 8,352; the original target view
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
-- The Colab notebook is now a 31-cell Phase 1 runbook being repinned to package
+- The Colab notebook is now a 31-cell Phase 1 runbook pinned to package
   commit `f2bcd784f3a54331069f088d5d182a407c51f7bf` (`0.6.0`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
-  boundary recovery into a separate view, and stops before any model-ready
-  join and quality-review cells have not yet run remotely. Exact rewrite history is in
+  boundary recovery into a separate view, adds a model-ready join, and runs a
+  proxy model-view quality review. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
 - The package `0.6.0` implementation now provides the next proxy dataset-quality
@@ -196,8 +195,8 @@ map and report before derived work runs. Exact preflight scope is in
   model features, canonicalizes equivalent UTC timestamp text before matching,
   invalidates stale checkpoints when the implementation changes, and reviews
   label balance, finite numeric features, chronology, and exclusions. Its
-  21-test local suite passes; the repinned notebook has not yet run the review
-  in Colab. Exact design is in
+  21-test local suite passes. The remote review passed its structural checks,
+  but exposed a feature-semantic defect described below. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - The corrected proxy join has now run remotely. It produced 8,352 audit rows
   and 8,292 leakage-safe model-ready rows across the 29 eligible days; 60 rows
@@ -205,6 +204,15 @@ map and report before derived work runs. Exact preflight scope is in
   three initial Binance features plus identifiers, label, and proxy-source
   metadata. Exact measurements and Drive paths are in
   `docs/evidence/2026-08-15-colab-proxy-join.md`.
+- The remote proxy model-view review completed with 8,292 model rows, 4,153
+  `UP` labels, 4,139 `DOWN` labels, 60 exclusions, and globally chronological
+  model keys. Its exact report and excluded-row output are recorded in
+  `docs/evidence/2026-08-15-colab-proxy-model-review.md`. The structural gate
+  passed, but the current feature builder assigns `return_1m` to the latest
+  one-second return in the lookback (`returns[-1]`), duplicating `return_1s`.
+  The intended policy is the net return from the first to the last close over
+  the complete 60-second lookback. Do not train or evaluate until this is
+  corrected and the affected views are regenerated.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather
   than restarting the full collection. The remote run completed all 30 source
@@ -325,9 +333,11 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Review the proxy model-ready view's label balance, feature numeric quality,
-   chronological ordering, and per-row exclusion reasons. Then define a
-   chronological baseline train/evaluation split; do not randomize windows.
+1. Correct the `return_1m` computation to use the net 60-second lookback
+   return, add a regression test, regenerate the affected remote feature,
+   target-join, and review outputs, then define a chronological baseline
+   train/evaluation split. Do not randomize windows or train from the current
+   semantically defective model view.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

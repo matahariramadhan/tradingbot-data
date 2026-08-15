@@ -215,7 +215,9 @@ def make_row(
             (current["close"] - previous["close"]) / previous["close"]
             for previous, current in zip(history, history[1:])
         ]
-        return_1m = returns[-1]
+        first_close = history[0]["close"]
+        last_close = history[-1]["close"]
+        return_1m = (last_close - first_close) / first_close
         row["return_1m"] = f"{return_1m:.10f}"
         row["return_1m_valid"] = "true"
         row["return_1m_quality_flag"] = "valid_consecutive_lookback"

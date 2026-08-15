@@ -285,6 +285,46 @@ class ArchiveWorkflowTests(unittest.TestCase):
                 "2026-06-29T00:04:58.000Z",
             )
 
+    def test_feature_view_return_1m_is_net_lookback_return(self) -> None:
+        decision = datetime(2026, 6, 29, 0, 5, tzinfo=timezone.utc)
+        decision_ms = int(decision.timestamp() * 1000)
+        records = []
+        for index, offset in enumerate(range(61, 0, -1)):
+            start_ms = decision_ms - offset * 1000
+            if index < 59:
+                close = 100.0
+            elif index == 59:
+                close = 109.0
+            else:
+                close = 110.0
+            record = self._binance_record(
+                start_ms,
+                datetime.fromtimestamp(
+                    (start_ms + 999) / 1000, tz=timezone.utc
+                ).isoformat().replace("+00:00", "Z"),
+            )
+            record["raw_event"]["k"]["c"] = str(close)
+            records.append(record)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            direct = root / "binance_raw_events_2026-06-29.jsonl.gz"
+            with gzip.open(direct, "wb") as destination:
+                destination.write(self._jsonl_bytes(records))
+
+            rows, _, counters = build_feature_view(
+                direct,
+                None,
+                datetime(2026, 6, 29, tzinfo=timezone.utc),
+                duration_seconds=600,
+            )
+
+            self.assertEqual(counters["feature_rows_usable"], 1)
+            row = rows[1]
+            self.assertEqual(row["return_1s"], f"{1 / 109:.10f}")
+            self.assertEqual(row["return_1m"], "0.1000000000")
+            self.assertNotEqual(row["return_1s"], row["return_1m"])
+
     def test_grouped_gzip_runner_completes_binance_scope_only(self) -> None:
         start = 1782691200000
         records = [

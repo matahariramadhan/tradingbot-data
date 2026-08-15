@@ -114,8 +114,8 @@ The student currently understands the distinction between:
   non-final missing-end windows, while the 13 missing-start rows are
   intraday. The cross-archive boundary-recovery scan completed all 30 source
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
-  unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
-  observations explicitly before any target/feature join.
+  unrecoverable from the scanned collection. Those 28 observations have now
+  been applied in the separate recovered target view.
 - The Colab notebook is now a 31-cell Phase 1 runbook being repinned to package
   `f2bcd784f3a54331069f088d5d182a407c51f7bf` (`0.6.0`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
@@ -123,33 +123,36 @@ The student currently understands the distinction between:
   adds a proxy model-view quality review.
   Its boundary scan checkpoints after each source archive, so interruption does
   not restart completed archive scans. Local structural and resumability tests
-  passed; the join and review steps have not yet run remotely.
+  passed; the join and review steps have now run remotely. The review output
+  is structurally valid, but `return_1m` currently duplicates `return_1s`.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
 The fix is pushed in commit
-`41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`). Run
-the repinned notebook and rerun the failed recovery cell. That recovery now
-completed: 28 boundaries were applied, zero rows require review, and the
-separate view contains 8,327 valid and 25 invalid rows. The next checkpoint is
-to run the separate model-ready Binance-feature/proxy-target join. Preserve the
-unresolved July 28 boundary and all intraday invalid rows; keep the proxy
-`label_source` separate from official label recovery.
+`41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`). That
+recovery completed: 28 boundaries were applied, zero rows require review, and
+the separate view contains 8,327 valid and 25 invalid rows. The unresolved
+July 28 boundary and all intraday invalid rows remain preserved; the proxy
+`label_source` remains separate from official label recovery.
 
 The join has now run remotely: 8,352 audit rows and 8,292 model-ready rows
-were produced, with 60 rows excluded for invalid feature/target data. The next
-checkpoint is reviewing label balance, numeric feature quality, chronological
-ordering, and exclusion reasons before designing a chronological baseline
-split.
+were produced, with 60 rows excluded for invalid feature/target data. The
+review found balanced labels and valid chronology, but the feature builder's
+`return_1m = returns[-1]` duplicates `return_1s`; correct that computation and
+regenerate the affected views before designing a chronological baseline split.
 
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
 three initial feature columns. It is package `0.6.0` at commit
 `f2bcd784f3a54331069f088d5d182a407c51f7bf`, has passed 21 local tests, and the
-quality review is ready for its remote run.
+quality review has completed remotely with 8,292 model rows and balanced
+labels. Before training, fix the feature builder's `return_1m = returns[-1]`
+assignment: it duplicates `return_1s` instead of computing the net return over
+the 60-second lookback. Regenerate and review the affected views after the
+fix.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.
