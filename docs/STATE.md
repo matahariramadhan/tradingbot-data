@@ -84,8 +84,8 @@ map and report before derived work runs. Exact preflight scope is in
 ## Available Artifacts
 
 - Git origin is configured. Local `main` and `origin/main` include the
-  timestamp-canonicalization fix at `6c9c9bf`; the notebook is being repinned
-  to package `0.5.1` at that commit.
+  version-aware stale-checkpoint fix at `4200413`; the notebook is being
+  repinned to package `0.5.2` at that commit.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -183,20 +183,21 @@ map and report before derived work runs. Exact preflight scope is in
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
 - The Colab notebook is now a 29-cell Phase 1 runbook being repinned to package
-  commit `6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200` (`0.5.1`). It verifies control
+  commit `420041347f78215cf71b9f8d76852968eb6374fd` (`0.5.2`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, and stops before any model-ready
   join. Its recovery and quality-verification cells have now run remotely; the
   model-ready join cell has not yet run remotely. Exact rewrite history is in
   `docs/evidence/2026-08-15-colab-notebook-rewrite.md` and the recovery update
   is in `docs/evidence/2026-08-15-colab-recovery-notebook-update.md`.
-- The package `0.5.1` implementation now provides the next join-integrity
+- The package `0.5.2` implementation now provides the next join-integrity
   gate. It matches by `window_start_utc`, stops on duplicate keys, preserves
   all source keys in an audit join, and emits a filtered per-day model-ready
   proxy view using only `return_1s`, `return_1m`, and `volatility_1m` as initial
-  model features and canonicalizes equivalent UTC timestamp text before
-  matching. Its 19-test local suite passes; it is committed, but the repinned
-  notebook has not yet rerun the join in Colab. Exact design is in
+  model features, canonicalizes equivalent UTC timestamp text before matching,
+  and invalidates stale checkpoints when the implementation changes. Its
+  19-test local suite passes; the repinned notebook has not yet rerun the join
+  in Colab. Exact design is in
   `docs/evidence/2026-08-15-proxy-join-implementation.md`.
 - Its boundary-recovery scan checkpoints after each completed raw source
   archive, so an interrupted Drive scan resumes at archive granularity rather

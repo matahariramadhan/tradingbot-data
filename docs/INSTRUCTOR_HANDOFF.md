@@ -117,7 +117,7 @@ The student currently understands the distinction between:
   unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
   observations explicitly before any target/feature join.
 - The Colab notebook is now a 29-cell Phase 1 runbook being repinned to package
-  `6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200` (`0.5.1`). It verifies existing
+  `420041347f78215cf71b9f8d76852968eb6374fd` (`0.5.2`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
   recovery into a separate target view, and adds a resumable model-ready join.
   Its boundary scan checkpoints after each source archive, so interruption does
@@ -140,9 +140,10 @@ unresolved July 28 boundary and all intraday invalid rows; keep the proxy
 The published next-slice implementation matches by canonicalized
 `window_start_utc`, stops on
 duplicate keys, preserves invalid rows in an audit view, and exposes only the
-three initial feature columns. It is package `0.5.1` at commit
-`6c9c9bfaba3cf2ed9cab4a3590ffa4bb3447f200`, has passed 19 local tests, and the
-join is ready for its remote rerun.
+three initial feature columns. It is package `0.5.2` at commit
+`420041347f78215cf71b9f8d76852968eb6374fd`, has passed 19 local tests, and the
+join is ready for its remote rerun. The implementation-version checkpoint
+control will rebuild the stale outputs from the earlier failed run.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.
