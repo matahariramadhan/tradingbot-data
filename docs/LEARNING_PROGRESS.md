@@ -326,3 +326,23 @@ The Binance proxy engineering-view gate is complete. This is not yet the
 official Polymarket research dataset because the Chainlink settlement target
 and official outcomes remain unresolved. The next teaching checkpoint is to
 define a chronological train/evaluation split without randomizing windows.
+
+## Lesson 8 — Chronological Baseline Split
+
+### Understanding demonstrated
+
+The learner correctly selected earlier eligible days for training and later
+eligible days for evaluation, identifying the central leakage risk: training
+must not use information from the future period it is supposed to predict. The
+learner accepted an initial split of 23 training days and 6 evaluation days so
+the baseline has more historical training data while retaining a later unseen
+period for evaluation.
+
+### Accepted split
+
+- Training: `2026-06-30` through `2026-07-22`
+- Evaluation: `2026-07-23` through `2026-07-28`
+
+This is an engineering/proxy baseline split, not an official Polymarket
+research result. The next step is to build a persisted split manifest and
+verify the resulting usable-row counts before training.

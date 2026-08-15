@@ -251,6 +251,12 @@ later. A later Polymarket-faithful task will keep fixed market start/end times
 separate from a decision time that may occur inside the market window. These are
 different prediction problems and their evaluations must remain separate.
 
+For the initial proxy baseline, the accepted chronological split uses the first
+23 eligible UTC days for training (`2026-06-30` through `2026-07-22`) and the
+final 6 eligible UTC days for evaluation (`2026-07-23` through `2026-07-28`).
+This split is for engineering validation only and must not be presented as the
+final official Polymarket result.
+
 The proxy boundary rule is also accepted: use the completed one-second close
 immediately before the window start and immediately before the five-minute end.
 Both are target-construction inputs, so their receipt times may be after the
@@ -346,9 +352,10 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Define a chronological baseline train/evaluation split for the corrected
-   proxy engineering view. Do not randomize windows. Keep this proxy baseline
-   separate from final official Polymarket claims.
+1. Build and verify the accepted chronological split artifact: first 23
+   eligible UTC days for training and final 6 eligible UTC days for evaluation.
+   Do not randomize windows. Keep this proxy baseline separate from final
+   official Polymarket claims.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary
    rows as invalid unless separately verified source evidence is found.
 3. Determine which historical Chainlink labels and reference values can be

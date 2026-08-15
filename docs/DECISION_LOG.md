@@ -37,6 +37,7 @@ canonical definitions. It does not restate those definitions.
 | D-027 | 2026-08-14 | Exclude source-incomplete, severely under-covered 2026-06-29 from the first feature/proxy view while preserving its raw/audit evidence; retain other days for row-level gap-aware validity rather than excluding whole days from aggregate gap counts alone | `docs/DATA_QUALITY_POLICY.md` rules 16-17 |
 | D-028 | 2026-08-15 | Treat Google Colab as stateless: keep code in Git and data, checkpoints, manifests, verified outputs, and reports in Google Drive; require every long-running notebook cell to resume from persisted work-unit checkpoints and skip verified completed units | `docs/COLAB_RUNBOOK.md` under **Stateless Colab contract** |
 | D-029 | 2026-08-15 | Apply uniquely sourced cross-archive boundary recoveries only into a separate verified proxy-target view; preserve the original target view and keep ambiguous or unrecoverable boundaries invalid | `docs/DATA_QUALITY_POLICY.md` rule 18 |
+| D-030 | 2026-08-15 | Use the first 23 eligible UTC days for the initial Binance-proxy training period and the final 6 eligible UTC days for evaluation; do not randomize windows | `docs/STATE.md` under **Recommended Next Work** |
 
 New entries are append-only. If a decision is superseded, append a new entry and
 link both entries to the new canonical definition; do not rewrite the old row.
