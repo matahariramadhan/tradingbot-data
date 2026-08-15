@@ -17,6 +17,15 @@ class PackageMetadataTests(unittest.TestCase):
 
         self.assertEqual(project["version"], tradingbot_data.__version__)
 
+    def test_training_extra_contains_visualization_dependency(self) -> None:
+        with (ROOT / "pyproject.toml").open("rb") as source:
+            project = tomllib.load(source)["project"]
+
+        training = project["optional-dependencies"]["training"]
+        self.assertTrue(
+            any(requirement.startswith("matplotlib") for requirement in training)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
