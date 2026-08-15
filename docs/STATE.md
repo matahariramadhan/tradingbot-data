@@ -83,11 +83,10 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes the follow-up notebook-pin
-  commit; `origin/main` remains at the previous `bb6fc36` until the user
-  pushes. The notebook pins the installable package at its recovery-capable
-  parent commit
-  `6f5a0873b28024d62a72eb9f2411e79e9b299612` (`0.4.0`).
+- Git origin is configured. Local `main` includes the recovery fix and repinned
+  notebook; `origin/main` remains at `585709a` until the user pushes. The
+  notebook pins package `0.4.1` at commit
+  `41fdff5619d4c00389628eb526f9f66ac19f3650`.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -137,12 +136,14 @@ map and report before derived work runs. Exact preflight scope is in
   directory, checkpoints after each day, verifies output checksums, and leaves
   the original proxy-target CSVs untouched. Exact implementation scope is in
   `docs/evidence/2026-08-15-proxy-boundary-recovery-implementation.md`.
-- A follow-up working-tree fix addresses a legacy derived-target bug exposed by
+- A follow-up commit addresses a legacy derived-target bug exposed by
   the first Colab recovery attempt: invalid rows had discarded an otherwise
   valid boundary. The proxy builder now preserves partial boundaries, and
   recovery can repair legacy final-window rows only from an exact adjacent
-  boundary. The local package version is `0.4.1`; it has not yet been
-  published or rerun remotely. Exact diagnosis and validation are in
+  boundary. Package version `0.4.1` is committed at
+  `41fdff5619d4c00389628eb526f9f66ac19f3650`; the repinned notebook is ready
+  but the commits have not yet been pushed or rerun remotely. Exact diagnosis
+  and validation are in
   `docs/evidence/2026-08-15-proxy-recovery-legacy-row-fix.md`.
 - The published `0.3.0` package has now run remotely across the first derived
   feature view: 29 eligible days produced 8,352 rows, of which 8,316 are fully
@@ -177,7 +178,7 @@ map and report before derived work runs. Exact preflight scope is in
   and left `2026-07-28` unrecoverable from the scanned collection. Exact scope
   and consequence are in `docs/evidence/2026-08-15-colab-boundary-recovery.md`.
 - The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
-  `6f5a0873b28024d62a72eb9f2411e79e9b299612` (`0.4.0`). It verifies control
+  `41fdff5619d4c00389628eb526f9f66ac19f3650` (`0.4.1`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, and stops before any model-ready
   join. Local JSON and code-cell validation passed; it has not been rerun
@@ -304,7 +305,7 @@ Exact measurements, scope, and supporting sources are owned by
 
 ## Recommended Next Work
 
-1. Publish the reviewed `0.4.1` recovery fix, repin the Colab notebook, and
+1. Push the reviewed `0.4.1` recovery fix, run the repinned Colab notebook, and
    apply the 28 recovered boundary observations through its explicit recovery
    step. Re-verify target shape, provenance, and quality counts.
 2. Preserve the unresolved July 28 boundary and the intraday missing-boundary

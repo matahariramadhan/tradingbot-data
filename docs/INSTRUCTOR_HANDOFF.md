@@ -117,7 +117,7 @@ The student currently understands the distinction between:
   unrecoverable from the scanned collection. The next checkpoint is applying the 28 recovered
   observations explicitly before any target/feature join.
 - The Colab notebook is now a 26-cell Phase 1 runbook pinned to package commit
-  `6f5a0873b28024d62a72eb9f2411e79e9b299612` (`0.4.0`). It verifies existing
+  `41fdff5619d4c00389628eb526f9f66ac19f3650` (`0.4.1`). It verifies existing
   control artifacts, separates feature and proxy generation, applies boundary
   recovery into a separate target view, and stops before a model-ready join.
   Its boundary scan checkpoints after each source archive, so interruption does
@@ -128,11 +128,13 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-Publish the follow-up `0.4.1` recovery fix and repin the notebook before
-rerunning the failed recovery cell. Review the separate recovered view for the
-28 found final boundaries and verify its shape, provenance, and quality.
-Preserve the unresolved July 28 boundary and all intraday invalid rows; keep
-the proxy `label_source` separate from official label recovery.
+Push commit
+`41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`), then
+run the repinned notebook and rerun the failed recovery cell. Review the
+separate recovered view for the 28 found final boundaries and verify its shape,
+provenance, and quality. Preserve the unresolved July 28 boundary and all
+intraday invalid rows; keep the proxy `label_source` separate from official
+label recovery.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

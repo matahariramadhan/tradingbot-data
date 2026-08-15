@@ -52,7 +52,7 @@ clear message rather than silently rebuilding or guessing it.
 ## 1. Clone a pinned revision
 
 Use the repository URL and the reviewed recovery-capable commit
-`6f5a0873b28024d62a72eb9f2411e79e9b299612`:
+`41fdff5619d4c00389628eb526f9f66ac19f3650`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -67,9 +67,9 @@ the existing manifest, coverage map, and checksum-bearing audit outputs before
 running the derived feature and proxy views. It stops at the cross-archive
 recovery gate until that target policy is explicitly accepted.
 
-The recovery-capable package revision is `0.4.0`. Do not run recovery from an
+The recovery-capable package revision is `0.4.1`. Do not run recovery from an
 unpinned working tree. After commit
-`6f5a0873b28024d62a72eb9f2411e79e9b299612` is available from the repository,
+`41fdff5619d4c00389628eb526f9f66ac19f3650` is available from the repository,
 run:
 
 ```python
@@ -114,7 +114,7 @@ data-quality rules.
 !tradingbot-data manifest \
   --archive-dir "/content/drive/MyDrive/<project>/raw-archives" \
   --output "/content/drive/MyDrive/<project>/manifest.json" \
-  --audit-version "tradingbot-data-0.4.0-<commit>" \
+  --audit-version "tradingbot-data-0.4.1-<commit>" \
   --policy-version "data-quality-2026-08-14" \
   --layout grouped-gzip \
   --recursive
