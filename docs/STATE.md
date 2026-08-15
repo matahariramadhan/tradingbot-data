@@ -85,9 +85,9 @@ map and report before derived work runs. Exact preflight scope is in
 
 ## Available Artifacts
 
-- Git origin is configured. Local `main` includes stage-specific feature
-  provenance at `657adfd`; the notebook is being repinned to package `0.7.2`
-  at that package commit.
+- Git origin is configured. Package version `0.8.0` is pinned for Colab at
+  `8aadeee328da5361736a3a09071331d761259091`; its distribution metadata and
+  module version are verified equal.
 - A one-day recorder sample for 2026-07-27 is available locally as
   `data/raw/archives/drive-download-20260810T091218Z-1-001.zip`.
 - The user has approximately 30 days of recorder data stored in Google Drive;
@@ -184,7 +184,7 @@ map and report before derived work runs. Exact preflight scope is in
   remains unchanged. Exact measurements are in
   `docs/evidence/2026-08-15-colab-proxy-target-recovery.md`.
 - The Colab notebook is now a 35-cell Phase 1 runbook pinned to package
-  commit `c02f801c45f43853c7aecd9e7a627da63ffa7325` (`0.8.0`). It verifies control
+  commit `8aadeee328da5361736a3a09071331d761259091` (`0.8.0`). It verifies control
   artifacts, runs feature and proxy views separately, applies the verified
   boundary recovery into a separate view, adds a model-ready join, and runs a
   proxy model-view quality review, chronological proxy split report, and the
@@ -244,6 +244,11 @@ map and report before derived work runs. Exact preflight scope is in
   skips only when those outputs remain verified against the same split. The
   remote training run is the next gate; its design is intentionally a proxy
   engineering baseline, not a final Polymarket result.
+- Package commit `8aadeee328da5361736a3a09071331d761259091`
+  corrects the distribution metadata to `0.8.0` and adds a regression test
+  requiring it to match the module version. The pinned notebook verifies both
+  identities before derived work runs. Exact local evidence is in
+  `docs/evidence/2026-08-15-package-version-metadata-fix.md`.
 - Package `0.7.2` now separates feature-output provenance from global package
   versioning. The next notebook run can reuse the verified corrected feature
   CSVs when only split/report code changed; only a feature implementation or

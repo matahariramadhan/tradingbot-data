@@ -116,45 +116,26 @@ The student currently understands the distinction between:
   groups and found 28 of the 29 final boundaries; `2026-07-28` remains
   unrecoverable from the scanned collection. Those 28 observations have now
   been applied in the separate recovered target view.
-- The Colab notebook is now a 33-cell Phase 1 runbook pinned to package
-  `657adfd123767dee6bb4685ab4ee98a2c8314bd2` (`0.7.2`). It verifies existing
-  control artifacts, separates feature and proxy generation, applies boundary
-  recovery into a separate target view, adds a resumable model-ready join, and
-  adds a proxy model-view quality review and chronological proxy split report.
-  Its boundary scan checkpoints after each source archive, so interruption does
-  not restart completed archive scans. Local structural and resumability tests
-  passed; the join and review steps have now run remotely. The post-fix review
-  confirms that `return_1m` is distinct from `return_1s`.
+- The Colab notebook is now a 35-cell Phase 1 runbook pinned to package
+  `8aadeee328da5361736a3a09071331d761259091` (`0.8.0`). It verifies existing
+  control artifacts, reuses stage-compatible feature outputs, applies boundary
+  recovery, joins and reviews the proxy model view, validates the chronological
+  split, and runs the first proxy baseline. Its bootstrap verifies both the
+  installed distribution version and module version before derived work runs.
 - The workflow is now installable as `tradingbot-data`; the Colab execution
   contract is documented in `docs/COLAB_RUNBOOK.md`.
 
 ## Immediate Next Checkpoint
 
-The fix is pushed in commit
-`41fdff5619d4c00389628eb526f9f66ac19f3650` (`tradingbot-data` `0.4.1`). That
-recovery completed: 28 boundaries were applied, zero rows require review, and
-the separate view contains 8,327 valid and 25 invalid rows. The unresolved
-July 28 boundary and all intraday invalid rows remain preserved; the proxy
-`label_source` remains separate from official label recovery.
+Run the pinned notebook through the `proxy-baseline` cell. The accepted split
+already contains 6,586 earlier training rows and 1,706 later evaluation rows
+with zero key overlap. The command must persist and checksum the fitted model,
+evaluation predictions, and metrics report in Drive.
 
-The join has now run remotely: 8,352 audit rows and 8,292 model-ready rows
-were produced, with 60 rows excluded for invalid feature/target data. The
-post-fix review found balanced labels, valid chronology, and a corrected
-`return_1m` range of `-0.0029595776` to `0.0071434727`. The next checkpoint is
-designing a chronological baseline split for the proxy engineering view.
-
-The published next-slice implementation matches by canonicalized
-`window_start_utc`, stops on
-duplicate keys, preserves invalid rows in an audit view, and exposes only the
-  three initial feature columns. It is package `0.7.2` at commit
-  `657adfd123767dee6bb4685ab4ee98a2c8314bd2`, has passed 25 local tests, and the
-quality review has completed remotely with 8,292 model rows, balanced labels,
-and corrected feature semantics. The pinned notebook invalidates old feature
-outputs when their feature implementation provenance does not match. Next, teach and define a
-chronological proxy baseline split. The split implementation verifies zero
-train/evaluation key overlap and row agreement with the review report; run the
-pinned notebook before training and do not mix this proxy baseline with
-official-target claims.
+After the run, compare the logistic-regression metrics with the majority-class
+baseline before changing features or model families. This is a Binance-proxy
+engineering experiment only; do not present it as an official Polymarket result
+or as evidence of trading profitability.
 
 Do not begin model training or live trading before the Phase 1 conditions in
 `docs/STATE.md` are satisfied.

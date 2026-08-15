@@ -52,7 +52,7 @@ clear message rather than silently rebuilding or guessing it.
 ## 1. Clone a pinned revision
 
 Use the repository URL and the reviewed baseline-training commit
-`c02f801c45f43853c7aecd9e7a627da63ffa7325`:
+`8aadeee328da5361736a3a09071331d761259091`:
 
 ```python
 !git clone https://github.com/<owner>/<repository>.git /content/tradingbot_v2
@@ -69,7 +69,7 @@ recovery gate until that target policy is explicitly accepted.
 
 The quality-review-capable package revision is `0.8.0`. Do not run recovery,
 joining, or review from an unpinned working tree. After commit
-`c02f801c45f43853c7aecd9e7a627da63ffa7325` is available from the repository,
+`8aadeee328da5361736a3a09071331d761259091` is available from the repository,
 run:
 
 ```python

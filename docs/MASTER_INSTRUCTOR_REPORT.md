@@ -1,7 +1,7 @@
 # Master Instructor Learning Report
 
 Status: Handoff summary, not a new authority source  
-Report date: 2026-08-14  
+Report date: 2026-08-15
 Project: BTC/Polymarket five-minute Up/Down research
 
 This report summarizes the learner's progress for a master instructor. The
@@ -45,6 +45,11 @@ The learner can explain and apply:
 - Binance as predictive data and Chainlink as the official settlement source;
 - the separation between a Binance engineering proxy and the official
   Polymarket research target;
+- the need for chronological time-series evaluation: earlier days train the
+  model, later days evaluate it, and train/evaluation keys must not overlap;
+- the current verified split totals: 6,586 training rows and 1,706 later
+  evaluation rows from 8,292 model-ready rows;
+- why this small three-feature baseline should run on CPU rather than a GPU;
 - per-input checksums, audit/code versions, policy versions, resumable capture
   groups, verified completion, and manifest/output consistency.
 
@@ -90,6 +95,8 @@ The learner accepted these durable design choices:
 - never trust status without checking the corresponding output;
 - require an explicit UTC coverage start instead of inferring the recording day
   from an upload filename.
+- use the first 23 eligible UTC days for proxy training and the final 6 days
+  for proxy evaluation, without randomization or key overlap.
 
 ## Implementation Completed
 
@@ -103,6 +110,9 @@ The project now contains:
 - multi-group batch orchestration with explicit coverage-map validation;
 - an installable `tradingbot-data` package and Colab execution runbook;
 - atomic writes, output checksums, stale-run recovery, and focused unit tests.
+- a `proxy-baseline` command that fits a standardized logistic regression on
+  training rows only and persists its model, evaluation predictions, and
+  checksum-bearing metrics report.
 
 The local end-to-end reproduction completed the legacy sample, verified its
 output, and safely skipped it on a subsequent run. Exact measurements are in the
@@ -119,54 +129,38 @@ matching checksum.
 
 ## Current Phase Status
 
-Phase 1 is not complete. The local engineering workflow is functional, but the
-research readiness gate still requires:
+Phase 1 is not complete. The 30-group Binance audit, proxy engineering view,
+and chronological split gates are complete; the first proxy baseline is
+implemented but has not yet been run remotely. The official research-readiness
+gate still requires:
 
-- the 30 remote candidate-date groups to be manifested and audited;
-- a verified group-to-UTC-day coverage map;
-- multi-day coverage and integrity results;
 - recorder source-code review or an intentional replacement;
 - recovery and verification of official Chainlink values and Polymarket
   outcomes;
-- the synchronized, documented research dataset and Phase 1 visualizations.
+- the synchronized, documented official research dataset and Phase 1
+  visualizations.
 
-Model training, backtesting, paper trading, and live trading have not started
-and should remain deferred until the data-readiness gate passes.
+The next training run is explicitly proxy engineering only. It must be
+compared with a majority-class baseline and must not be presented as the final
+Polymarket result. Official-target training, backtesting, paper trading, and
+live trading remain deferred.
 
 ## Recommended Next Lesson
 
-The earlier grouped-GZIP workflow was pinned and verified at package version
-`0.2.0`, revision `03abbb745cc7919087b2e56607bb6bdf4d582a23`. The current
-feature/proxy workflow is pinned to package version `0.3.0`, revision
-`8bc95e2333348fcce784d0a497f38c44bd1e3a66`. The inspected Drive manifest now
-has all 30 groups processed successfully, with the expected 89 raw members, one
-explicit missing Polymarket role, and 10 ignored derived files. The local
-byte-identical July 27 direct-GZIP reproduction matches the known baseline, and
-the real Drive-backed July 27 audit is now completed with a verified persistent
-output. The full 30-group UTC coverage preflight has also passed with zero
-review groups. A separate post-batch check verified all 30 records are
-`completed`, every output exists, and every output checksum matches. Next,
-the aggregate report found 89,677 missing starts across 55 gap events, with a
-largest gap of 645 seconds. The learner accepted excluding source-incomplete,
-severely under-covered June 29 from the first feature/proxy view while retaining
-all raw/audit evidence, and retaining other days for row-level gap-aware
-validity. The local `0.3.0` feature-view builder now passes 13 tests and its
-July 27 canary produced 284 usable rows out of 288. The published revision's
-remote batch is now complete: 8,316 of 8,352
-rows are fully usable, with 36 invalid rows preserved for quality-flag review.
-The first classification found 29 `received_after_cutoff` rows and 7
-`missing_kline` rows. The next lesson is to inspect their exact timestamps,
-which confirmed one opening-boundary row per eligible day and seven isolated
-intraday gaps. The next lesson is to join a separate Binance proxy target view.
-The July 27 remote proxy canary now matches the corrected local result: 283
-valid targets and 5 missing-boundary windows. All valid target start receipts
-were late, which is allowed for offline target construction but never for
-decision-time features. The 29-day batch produced 8,299 valid targets out of
-8,352. Timestamp review found 29 final `23:55:00` windows and 11 non-final
-missing-end windows; the 13 missing-start rows are intraday. The next lesson
-is to check adjacent-day recovery before joining targets to features. The
-Colab notebook was then rewritten into a 23-cell pinned Phase 1 runbook and
-passed local JSON/code validation; it now stops at that recovery gate.
+Run the latest pinned notebook from package `0.8.0`, commit
+`8aadeee328da5361736a3a09071331d761259091`, through the proxy-baseline cell.
+The notebook should reuse the verified feature outputs, install the optional
+training dependencies, and write these Drive artifacts under
+`proxy-baseline-v1/`:
+
+- `proxy-baseline-v1.json` — model parameters, metrics, provenance, and hashes;
+- `proxy-baseline-v1.joblib` — the fitted pipeline;
+- `proxy-baseline-evaluation-v1.csv` — one prediction per evaluation row.
+
+The teaching checkpoint after the run is to compare the logistic-regression
+evaluation metrics with the majority baseline. Ask only the meaningful next
+questions: what the evaluation result measures, and whether it justifies a
+second experiment. Do not tune the model or claim trading performance yet.
 
 ## Resume Instructions
 
@@ -180,4 +174,6 @@ After context compaction, read:
    checkpoint.
 
 Do not restart the completed lessons unless the learner requests a refresher
-or demonstrates uncertainty.
+or demonstrates uncertainty. Do not rerun the expensive raw feature scans
+unless their feature implementation or raw-source hash changes. A GPU is not
+needed for the current three-feature, 8,292-row baseline.
