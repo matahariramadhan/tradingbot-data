@@ -20,6 +20,7 @@ from scripts.run_archive_audit import main as audit_main
 from scripts.run_archive_batch import main as batch_main
 from scripts.download_binance_klines import main as historical_download_main
 from scripts.build_binance_15m_dataset import main as historical_15m_main
+from scripts.build_binance_hourly_dataset import main as historical_hourly_main
 
 
 COMMANDS: dict[str, tuple[str, Callable[[], int]]] = {
@@ -43,6 +44,10 @@ COMMANDS: dict[str, tuple[str, Callable[[], int]]] = {
     "historical-15m": (
         "build a historical Binance 15-minute dataset",
         historical_15m_main,
+    ),
+    "historical-hourly": (
+        "build a historical Binance hourly dataset",
+        historical_hourly_main,
     ),
 }
 
