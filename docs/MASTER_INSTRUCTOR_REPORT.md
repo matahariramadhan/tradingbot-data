@@ -120,6 +120,13 @@ The learner accepted these durable design choices:
 - The V1 timing architecture is fixed: historical 1-minute Binance data,
   predictions at UTC quarter-hours, non-overlapping 15-minute targets, and
   5-minute/15-minute/30-minute context derived from that same source.
+- The learner then replaced that active 15-minute task with hourly direction:
+  decisions at `HH:00`, non-overlapping 60-minute targets, and 1-minute raw
+  data retained for feature construction. The 15-minute implementation remains
+  prototype history.
+- The active historical scope is the latest four complete UTC years, with a
+  one-day short-term warm-up and an approximately 70/15/15 chronological date
+  split.
 
 ## Implementation Completed
 
@@ -145,6 +152,11 @@ The project now contains:
   The separate `historical_binance_15m.ipynb` runbook checkpoints each UTC day
   on Drive and publishes audit, model-ready, and chronological split reports.
   Local tests pass; the remote historical source has not yet been run.
+- package `0.10.0` at commit
+  `925e4d9f9a94a7ffb9f777caafbbe7badde337d1` adds the hourly dataset builder
+  with explicit date split boundaries. The separate
+  `historical_binance_hourly_4y.ipynb` notebook is prepared but has not yet
+  run against the remote four-year source.
 
 The local end-to-end reproduction completed the legacy sample, verified its
 output, and safely skipped it on a subsequent run. Exact measurements are in the
@@ -178,15 +190,12 @@ backtesting, paper trading, and live trading remain deferred.
 
 ## Recommended Next Lesson
 
-The completed five-minute baseline is now preserved as historical engineering
-evidence. The implementation for the simpler historical Binance dataset is
-complete. Run the separate notebook remotely, review source coverage and
-usable-row counts, and explicitly accept or revise its proposed 20/4/5
-chronological split before training. Historical REST klines do not carry the
-original client receipt time, so this slice must disclose its
-`interval_complete_assumption`. Keep the implementation internally
-configurable, but do not teach or compare other horizons yet. Do not claim
-trading performance.
+The completed five-minute baseline and 15-minute prototype are preserved as
+historical engineering evidence. Run the separate four-year hourly notebook,
+review source coverage and usable-row counts, and inspect its approximately
+70/15/15 chronological split before training. Historical REST klines do not
+carry the original client receipt time, so this slice must disclose its
+`interval_complete_assumption`. Do not claim trading performance.
 
 ## Resume Instructions
 

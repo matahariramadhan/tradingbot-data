@@ -2,11 +2,12 @@
 
 This is the execution handoff for the remote archive and derived-view workflow.
 The ordered `tradingbot_data.ipynb` is the maintained completed-pipeline
-runbook. The separate `historical_binance_15m.ipynb` is the active simple
-historical Binance direction-data lesson. Colab runs the package; Google Drive
-stores raw archives, manifests, coverage maps, checkpoints, and derived
-outputs. The repository must contain code and runbook documentation, not raw
-data.
+runbook. The separate `historical_binance_hourly_4y.ipynb` is the active
+historical Binance direction-data lesson. The earlier
+`historical_binance_15m.ipynb` is preserved as a small prototype. Colab runs
+the package; Google Drive stores raw archives, manifests, coverage maps,
+checkpoints, and derived outputs. The repository must contain code and runbook
+documentation, not raw data.
 
 ## Stateless Colab contract
 
@@ -166,9 +167,30 @@ publish a new feature identity and regenerate affected outputs.
 For a private repository, authenticate through the approved Colab mechanism.
 Do not place GitHub tokens in notebook cells or committed files.
 
-## Historical 15-minute Binance direction slice
+## Historical hourly four-year Binance direction slice
 
-This slice deliberately does not rerun the completed recorder/archive workflow.
+This is the active replacement task. It uses package `0.10.0`, pinned at
+commit `925e4d9f9a94a7ffb9f777caafbbe7badde337d1`, and is run through
+`historical_binance_hourly_4y.ipynb`.
+
+The notebook downloads independent BTCUSDT 1-minute klines for
+`2022-08-15` through `2026-08-15` inclusive. The extra August 15, 2022 day
+supplies the short-term lookback for the first target day. Target rows
+cover `2022-08-16` through `2026-08-15` inclusive. The builder creates 24
+hourly rows per target day, with decisions at `HH:00` and a non-overlapping
+60-minute target.
+
+The first split uses explicit date boundaries: 1,023 training days, 219
+validation days, and 219 final-holdout days. This approximates 70/15/15 and
+is applied before usable-row counts are known. The downloader and builder
+checkpoint each UTC day on Drive and skip verified outputs after interruption.
+The remote four-year run has not yet completed; do not train from this notebook
+until its reports pass review.
+
+## Historical 15-minute Binance direction prototype
+
+This slice is preserved for learning history and deliberately does not rerun the
+completed recorder/archive workflow. It is not the active task.
 It uses package `0.9.0`, pinned at commit
 `91507cf3303bc0a88977091c3601175b3acd21e4`, and is run through
 `historical_binance_15m.ipynb`.

@@ -44,13 +44,13 @@ persisted identities and checksums remain valid.
 
 The completed five-minute experiment is now historical engineering evidence.
 Do not continue its EDA or tune against its observed six-day evaluation. The
-learner deliberately simplified the next slice to one 15-minute Binance
-direction task.
+learner first built a small 15-minute Binance direction prototype, then
+replaced the active task with one hourly Binance direction experiment.
 
 Build the smallest understandable end-to-end historical-data slice that:
 
 1. loads a manageable amount of verified historical Binance data;
-2. creates non-overlapping 15-minute `UP`/`DOWN` labels without future leakage;
+2. creates non-overlapping one-hour `UP`/`DOWN` labels without future leakage;
 3. shows a few human-readable feature and label plots; and
 4. persists a chronological train/validation/final-holdout definition.
 
@@ -73,17 +73,19 @@ short-term features: `return_1m`, `return_5m`, `return_15m`, `return_30m`,
 `high_low_range`, `distance_ma_15`, `ma_slope_15`, and `rsi_14`. Defer the
 long-term regime block until this loop is complete.
 
-The learner accepted the V1 timing architecture: use historical Binance
-1-minute klines as the raw source, predict only at fixed UTC quarter-hours,
-create non-overlapping 15-minute targets, and derive 5-minute, 15-minute, and
-30-minute context from the same 1-minute source.
+The learner replaced the V1 timing architecture with hourly predictions: use
+historical Binance 1-minute klines as the raw source, predict only at `HH:00`,
+create non-overlapping 60-minute targets, and derive short-term context from
+the same 1-minute source. The completed 15-minute prototype remains available
+for comparison but is not the active task.
 
-The implementation checkpoint is now complete in package `0.9.0` at commit
-`91507cf3303bc0a88977091c3601175b3acd21e4`. The separate
-`historical_binance_15m.ipynb` runbook downloads independent historical
+The earlier prototype checkpoint is complete in package `0.9.0` and remains
+preserved. The active replacement is implemented in package `0.10.0` at
+commit `925e4d9f9a94a7ffb9f777caafbbe7badde337d1`. The separate
+`historical_binance_hourly_4y.ipynb` runbook downloads four years of independent
 BTCUSDT 1-minute klines, checkpoints one UTC day at a time on Drive, builds
-fixed quarter-hour rows, and publishes audit/model/split reports. Local tests
-cover future-feature isolation, missing-boundary preservation, output
+hourly rows, and publishes audit/model/split reports. Local tests cover
+one-hour future-feature isolation, missing-boundary preservation, output
 verification, chronological split uniqueness, and rerun skipping.
 
 Keep the horizon configurable internally, but do not expose or compare other
@@ -194,11 +196,11 @@ The student currently understands the distinction between:
 
 ## Immediate Next Checkpoint
 
-Run the separate historical notebook remotely. Review its persisted source
-coverage and usable-row counts before training. It proposes 20 training days,
-4 validation days, and 5 final holdout days for the 29 target days; obtain the
-learner's explicit acceptance of that split before treating it as the durable
-experiment design. Do not restart the completed recorder/proxy lessons.
+Run `historical_binance_hourly_4y.ipynb` remotely. Review its persisted source
+coverage and usable-row counts before training. The active slice uses the
+latest four complete UTC years and an approximately 70/15/15 chronological
+date split. Do not restart the completed recorder/proxy or 15-minute prototype
+lessons.
 
 The completed baseline was correct on 854 of 1,706 later evaluation rows,
 versus 845 for the training-majority baseline; ROC-AUC was 0.487225 and

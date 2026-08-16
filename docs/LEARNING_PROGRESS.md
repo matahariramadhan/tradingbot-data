@@ -469,3 +469,25 @@ The next learning checkpoint is to run the notebook remotely and interpret its
 source coverage and usable-row counts. The notebook proposes 20 training
 days, 4 validation days, and 5 final holdout days; this split still needs the
 learner's explicit acceptance before it becomes the durable experiment design.
+
+## Lesson 11 — Replace the Active Task with Hourly Direction
+
+### Accepted scope
+
+The learner recognized that the 20/4/5 split belonged only to the small
+29-day prototype, not to a multi-year Binance dataset. The active experiment
+is now the latest four complete UTC years of BTCUSDT history. The prediction
+task is one-hour direction: decide at each `HH:00` and predict the following
+non-overlapping 60-minute window. Historical 1-minute klines remain the raw
+source.
+
+The 15-minute notebook and implementation remain preserved as prototype
+history. The active hourly replacement is implemented in package `0.10.0` at
+commit `925e4d9f9a94a7ffb9f777caafbbe7badde337d1`, with a separate stateless
+four-year Colab notebook and explicit chronological date boundaries.
+
+### Next checkpoint
+
+Run the hourly notebook remotely. Inspect downloaded-day coverage, feature and
+target validity, model-ready row counts, label balance, and the approximately
+70/15/15 chronological split before training a baseline.

@@ -133,6 +133,18 @@ Scope: First BTC feature pipeline
     for the following 15-minute window and derive the accepted 5-minute,
     15-minute, and 30-minute context features from that same 1-minute source.
     Prediction cadence and raw-data frequency are intentionally different.
+26. Supersede rules 21 and 25 as the active learning task: use historical
+    Binance 1-minute klines to make one direction prediction at each UTC hour
+    (`HH:00`) for the following non-overlapping 60-minute window. Use the
+    completed one-minute close immediately before the decision and immediately
+    before the next hour as the target boundaries. Preserve the 15-minute
+    implementation as a prototype, not as the active experiment.
+27. The active hourly slice uses the latest four complete UTC years of target
+    dates, `2022-08-16` through `2026-08-15` inclusive, with `2022-08-15` as
+    short-term lookback warm-up. The first split is chronological and uses
+    explicit date boundaries intended to approximate 70% training, 15%
+    validation, and 15% final holdout; split by whole UTC dates before counting
+    usable rows and never randomize hourly rows.
 
 ## Initial Output Fields
 

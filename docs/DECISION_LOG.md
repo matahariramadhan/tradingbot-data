@@ -45,6 +45,8 @@ canonical definitions. It does not restate those definitions.
 | D-035 | 2026-08-15 | Build the active 15-minute regime-feature dataset from an independent Binance historical source with at least 100 daily candles of warm-up; aggregate completed 1-minute data into 1-hour, 4-hour, and daily context and summarize the daily history into interpretable features | `docs/DATA_QUALITY_POLICY.md` rule 23 |
 | D-036 | 2026-08-15 | Narrow the first implementation to the 12-feature short-term 15-minute block and defer 100-day, 1-hour, and 4-hour regime features until the complete short-term loop is understood | `docs/DATA_QUALITY_POLICY.md` rule 24 |
 | D-037 | 2026-08-15 | Use historical Binance 1-minute klines while predicting only at fixed UTC quarter-hours, with non-overlapping 15-minute targets and 5-minute/15-minute/30-minute features derived from the same 1-minute source | `docs/DATA_QUALITY_POLICY.md` rule 25 |
+| D-038 | 2026-08-16 | Supersede the active 15-minute task with hourly Binance direction: use 1-minute raw data, decide at `HH:00`, and predict the next non-overlapping 60-minute window; preserve the 15-minute slice as prototype history | `docs/DATA_QUALITY_POLICY.md` rule 26 |
+| D-039 | 2026-08-16 | Use the latest four complete UTC years for the active hourly slice, with one warm-up day and an explicit chronological approximately 70/15/15 date split | `docs/DATA_QUALITY_POLICY.md` rule 27 |
 
 New entries are append-only. If a decision is superseded, append a new entry and
 link both entries to the new canonical definition; do not rewrite the old row.
